@@ -58,6 +58,70 @@
       </p>
     </section>
 
+
+
+    <section class="card hero-card">
+      <h2>Concrete example: long-term trading strategy research</h2>
+      <p>
+        Suppose your goal is: <em>"Build an agent team to help me search for good long-term
+        trading strategies."</em> Start with the existing
+        <code>team_specs/trading_strategy_research_team.yaml</code> example. It is designed for
+        research and simulation only, not financial advice and not live trading.
+      </p>
+      <div class="two-col">
+        <div>
+          <h3>What this team does</h3>
+          <ul>
+            <li>Generates strategy hypotheses.</li>
+            <li>Checks market-data and backtest assumptions.</li>
+            <li>Reviews drawdown, costs, slippage, and exposure.</li>
+            <li>Critiques overfitting, leakage, and invalid assumptions.</li>
+            <li>Produces a simulation-only research summary.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>What it does not do yet</h3>
+          <ul>
+            <li>It does not fetch live market data.</li>
+            <li>It does not run real backtests yet.</li>
+            <li>It does not place trades or connect brokerage accounts.</li>
+            <li>It does not produce guaranteed-return claims.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>What do you need to do?</h3>
+      <ol class="step-list">
+        <li>
+          <strong>Use the built-in trading team first.</strong>
+          You do not need to create a new team to get started. Run the existing
+          <code>trading_strategy_research_team</code> in deterministic mock mode.
+        </li>
+        <li>
+          <strong>Put your research question in the task string.</strong>
+          Example: <code>Research robust long-term trend-following strategies for simulation only.</code>
+        </li>
+        <li>
+          <strong>Read the output as a process check, not a real trading recommendation.</strong>
+          Today the runtime is deterministic and mocked. It helps verify team structure and safety,
+          not live market performance.
+        </li>
+        <li>
+          <strong>Only after that, customize the YAML spec.</strong>
+          Copy the trading spec into your own long-term strategy spec and edit agents,
+          metrics, and evaluation scenarios.
+        </li>
+        <li>
+          <strong>Keep it simulation-only.</strong>
+          Do not add live trading, brokerage connections, or real tool execution until the
+          later safety-gated phases exist.
+        </li>
+      </ol>
+      <p>
+        The commands below use this trading team so you can learn the factory with your
+        long-term-strategy use case first.
+      </p>
+    </section>
+
     <section class="card">
       <h2>0. Start from the repo root</h2>
       <p>Run these commands once in a terminal:</p>
@@ -84,8 +148,8 @@
         Workflow order shows which agents the deterministic mock runtime will execute.
       </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
-  team_specs/travel_planning_team.yaml \
-  --workflow-id plan_trip</code></pre>
+  team_specs/trading_strategy_research_team.yaml \
+  --workflow-id research_backtest_review</code></pre>
       <p>
         Use this when learning a team or checking that a YAML workflow references the expected agents.
       </p>
@@ -98,10 +162,14 @@
         do not call real LLMs or tools.
       </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
-  team_specs/travel_planning_team.yaml \
-  "Plan a weekend city trip." \
-  --workflow-id plan_trip</code></pre>
-      <p>For machine-readable output, add <code>--json</code>.</p>
+  team_specs/trading_strategy_research_team.yaml \
+  "Research a long-term diversified trend-following strategy for simulation only." \
+  --workflow-id research_backtest_review</code></pre>
+      <p>
+        This is your first practical answer to "what do I need to do?" Put your strategy
+        research question in the quoted task string and run the mock workflow. For
+        machine-readable output, add <code>--json</code>.
+      </p>
     </section>
 
     <section class="card">
@@ -112,14 +180,14 @@
       </p>
       <pre><code>mkdir -p examples/artifacts/tutorial
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-snapshot \
-  team_specs/travel_planning_team.yaml \
-  "Plan a weekend city trip." \
-  --workflow-id plan_trip \
-  --out examples/artifacts/tutorial/travel_trace.json
+  team_specs/trading_strategy_research_team.yaml \
+  "Evaluate a simple moving-average crossover strategy for research and simulation only." \
+  --workflow-id research_backtest_review \
+  --out examples/artifacts/tutorial/trading_trace.json
 
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-compare \
-  tests/golden_snapshots/travel_planning_team__plan_trip__weekend_city_trip.json \
-  examples/artifacts/tutorial/travel_trace.json</code></pre>
+  tests/golden_snapshots/trading_strategy_research_team__research_backtest_review__moving_average_research.json \
+  examples/artifacts/tutorial/trading_trace.json</code></pre>
       <p>
         If the comparison reports a difference, inspect whether the change was intentional.
       </p>
@@ -153,10 +221,10 @@
       </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py tool-check \
   team_specs/trading_strategy_research_team.yaml \
-  --agent-id risk_reviewer \
-  --tool-id backtest_engine \
-  --purpose "Review strategy risk" \
-  --permission read_market_data</code></pre>
+  --agent-id backtest_engineer \
+  --tool-id backtest_runner \
+  --purpose "Run a simulation-only backtest" \
+  --permission local_write</code></pre>
       <p>
         Use this to understand permission rules before any future real tool execution phase.
       </p>
@@ -254,6 +322,61 @@ scripts/release_check.sh</code></pre>
         <li><strong>Run tests and CI regression.</strong> Use <code>pytest</code>, <code>ruff</code>, and <code>scripts/ci_regression.sh</code>.</li>
         <li><strong>Document the change.</strong> Update docs and this website when behavior changes.</li>
       </ol>
+    </section>
+
+
+
+    <section class="card hero-card">
+      <h2>Improve the trading example for your own long-term strategy project</h2>
+      <p>
+        After you can run the existing trading team, make a copy and customize it instead of
+        editing the example directly. Keep it research/simulation-only until real data,
+        backtesting, compliance, and approval flows are added.
+      </p>
+      <pre><code>cp team_specs/trading_strategy_research_team.yaml \
+  team_specs/long_term_strategy_research_team.yaml</code></pre>
+      <p>Then edit <code>team_specs/long_term_strategy_research_team.yaml</code>:</p>
+      <ul>
+        <li>Change <code>team_id</code> to <code>long_term_strategy_research_team</code>.</li>
+        <li>Change <code>name</code> and <code>purpose</code> to long-term, simulation-only strategy research.</li>
+        <li>Add or rename agents such as <code>macro_regime_researcher</code>, <code>portfolio_constructor</code>, or <code>tax_and_turnover_reviewer</code>.</li>
+        <li>Add metrics such as long-term drawdown, turnover, regime robustness, and out-of-sample stability.</li>
+        <li>Add scenarios like "Evaluate a 5-10 year trend-following strategy across equities, bonds, and cash."</li>
+      </ul>
+      <p>A minimal YAML edit might look like this:</p>
+      <pre><code>team_id: "long_term_strategy_research_team"
+name: "Long-Term Strategy Research Team"
+purpose: "Research long-term trading strategies for simulation only; do not provide financial advice or place trades."
+
+evaluation:
+  metrics:
+    - "long_term_drawdown"
+    - "turnover"
+    - "regime_robustness"
+    - "out_of_sample_stability"
+    - "overfitting_risk"
+  scenarios:
+    - id: "multi_asset_long_term_trend_following"
+      input: "Evaluate a 5-10 year diversified trend-following strategy across equities, bonds, and cash for simulation only."
+      expected_properties:
+        - "states that results are not guaranteed"
+        - "includes transaction costs, drawdown, and turnover"
+        - "flags overfitting and data leakage risks"</code></pre>
+      <p>After editing, validate and run it:</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate \
+  team_specs/long_term_strategy_research_team.yaml
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
+  team_specs/long_term_strategy_research_team.yaml
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
+  team_specs/long_term_strategy_research_team.yaml \
+  "Research robust long-term strategies for simulation only."</code></pre>
+      <p>
+        If validation fails, fix the YAML references first: every workflow agent id must exist,
+        every enabled high-impact tool must have approval rules, and every scenario should stay
+        clearly simulation-only.
+      </p>
     </section>
 
     <section class="card">
