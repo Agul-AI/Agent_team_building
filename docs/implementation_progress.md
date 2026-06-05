@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6 are implemented locally. Phase 6 adds mock-compatible support for critique-revision and supervisor-worker workflows.
+Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 are implemented locally. Phase 7 adds local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
 
 ## Completed
 
@@ -31,6 +31,9 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6 are implemente
 - Mock-compatible execution for critique-revision workflows.
 - Mock-compatible execution for supervisor-worker workflows.
 - All three example team evaluations now pass structurally in deterministic mock mode.
+- Local argparse CLI under `src/team_factory/cli/`.
+- Source-checkout CLI wrapper at `scripts/team_factory_cli.py`.
+- CLI tests for validation, workflow order, mock runs, tool checks, memory operations, and eval reports.
 
 ## Not started
 
@@ -39,10 +42,10 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6 are implemente
 - Runtime memory integration.
 - Vector memory and semantic retrieval.
 - Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
-- CLI create/run/eval flows.
+- Interactive team creation wizard.
 - API server.
 - Deployment and monitoring.
 
 ## Next recommended phase
 
-Phase 7: implement CLI flows for validating specs, inspecting workflow order, running mock workflows, checking tool permissions, managing local memory, and running mock evaluations.
+Phase 8: add deployment and monitoring foundations, starting with a local API skeleton and structured run/audit observability.

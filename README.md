@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7**.
 
 Implemented now:
 
@@ -17,6 +17,7 @@ Implemented now:
 - Local SQLite memory foundation with retention and redaction.
 - Deterministic evaluation harness and Markdown scenario reports.
 - Mock-compatible workflow support for sequential, critique-revision, and supervisor-worker teams.
+- Local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
 
 Not implemented yet:
 
@@ -27,8 +28,19 @@ Not implemented yet:
 - Runtime memory integration.
 - Vector memory and semantic retrieval.
 - Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
-- CLI workflows beyond skeleton scripts.
+- Interactive UI flows and production API workflows.
 - Deployment.
+
+
+## Use the local CLI
+
+From this source checkout:
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py --help
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate team_specs/*.yaml
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py eval team_specs/*.yaml
+```
 
 ## Validate locally
 

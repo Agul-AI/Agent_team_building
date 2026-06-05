@@ -50,7 +50,7 @@ Phase 0/1 implemented the foundation:
 - validation tests
 - example team specs
 
-Phase 2 adds deterministic mock execution for sequential workflows. Phase 3 adds manifest-only tool authorization. Phase 4 adds standalone SQLite memory persistence, retention, and redaction. Phase 5 adds deterministic mock evaluation reports. Phase 6 adds mock-compatible critique-revision and supervisor-worker workflow support. Real LLM execution, actual tool execution, runtime memory integration, vector memory, and semantic evaluation scoring are future phases.
+Phase 2 adds deterministic mock execution for sequential workflows. Phase 3 adds manifest-only tool authorization. Phase 4 adds standalone SQLite memory persistence, retention, and redaction. Phase 5 adds deterministic mock evaluation reports. Phase 6 adds mock-compatible critique-revision and supervisor-worker workflow support. Phase 7 adds local CLI flows. Real LLM execution, actual tool execution, runtime memory integration, vector memory, semantic evaluation scoring, and deployment services are future phases.
 
 ## E. Alternative architectures and tradeoffs
 
@@ -237,7 +237,7 @@ Phase 1 includes three example specs:
 | Phase 4 | Local SQLite memory foundation | Implemented locally |
 | Phase 5 | Deterministic mock evaluation harness | Implemented locally |
 | Phase 6 | Example team mock runtime demos | Implemented locally |
-| Phase 7 | CLI/UI | Not started |
+| Phase 7 | Local CLI flows | Implemented locally |
 | Phase 8 | Deployment and monitoring | Not started |
 
 ## P. First 10 Codex tasks
