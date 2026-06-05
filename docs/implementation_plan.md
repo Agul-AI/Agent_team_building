@@ -50,7 +50,7 @@ Phase 0/1 implemented the foundation:
 - validation tests
 - example team specs
 
-Phase 2 now adds deterministic mock execution for sequential workflows only. Real LLM execution, tool execution, memory persistence, and evaluations are future phases.
+Phase 2 adds deterministic mock execution for sequential workflows only. Phase 3 adds manifest-only tool authorization. Real LLM execution, actual tool execution, memory persistence, and evaluations are future phases.
 
 ## E. Alternative architectures and tradeoffs
 
@@ -233,7 +233,7 @@ Phase 1 includes three example specs:
 | Phase 0 | Requirements, architecture, docs, repo skeleton | Implemented in this initial commit |
 | Phase 1 | Minimal team spec format, YAML loader, validation, tests | Implemented in this initial commit |
 | Phase 2 | Basic deterministic mock orchestrator | Implemented locally |
-| Phase 3 | Tool registry | Not started |
+| Phase 3 | Manifest-only tool registry and permission layer | Implemented locally |
 | Phase 4 | Memory layer | Not started |
 | Phase 5 | Evaluation harness | Not started |
 | Phase 6 | Example team runtime demos | Not started |

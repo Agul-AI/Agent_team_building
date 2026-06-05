@@ -17,3 +17,17 @@ The spec validator enforces:
 - Domain-specific policy packs.
 - Financial research-only mode by default.
 - Audit logs for all tool calls and approvals.
+
+
+## Phase 3 permission-layer guarantees
+
+The manifest-only tool registry enforces:
+
+- unknown tools are blocked
+- disabled tools are blocked
+- agent tool allowlists are enforced
+- manifest permissions must be granted by the request
+- critical/high-impact tools require human approval
+- claimed approval requires a traceable approval id
+
+No tool execution is implemented in Phase 3.

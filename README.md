@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, and Phase 2**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, and Phase 3**.
 
 Implemented now:
 
@@ -13,12 +13,14 @@ Implemented now:
 - Example specs for scientific discovery, trading strategy research, and travel planning.
 - Unit tests for valid and invalid spec validation behavior.
 - Deterministic mock orchestrator for sequential workflows.
+- Manifest-only tool registry and permission decisions.
 
 Not implemented yet:
 
 - Real LLM orchestration.
 - Non-sequential workflow runtime semantics.
 - Tool execution.
+  - Phase 3 can authorize proposed calls but intentionally does not execute them.
 - Memory persistence.
 - Evaluation runtime.
 - CLI workflows beyond skeleton scripts.
@@ -43,6 +45,24 @@ spec = load_team_spec("team_specs/travel_planning_team.yaml")
 workflow = compile_workflow(spec, "plan_trip")
 result = workflow.run("Plan a three-day museum-focused trip under $1,500.")
 print(result.final_output)
+```
+
+## Check a tool authorization decision
+
+The Phase 3 tool layer is manifest-only: it can authorize or block proposed calls, but it does not execute them.
+
+```python
+from team_factory.specs.loader import load_team_spec
+from team_factory.tools import ToolCallRequest, ToolRegistry
+
+spec = load_team_spec("team_specs/travel_planning_team.yaml")
+registry = ToolRegistry.from_team_spec(spec)
+request = ToolCallRequest(
+    tool_id="web_search",
+    agent_id="destination_researcher",
+    purpose="Research museum opening hours.",
+)
+print(registry.authorize(request).status)
 ```
 
 ## View the local website

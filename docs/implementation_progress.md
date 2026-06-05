@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, and Phase 2 are implemented locally. Phase 2 adds a deterministic mock orchestrator for sequential workflows only.
+Phase 0, Phase 1, Phase 2, and Phase 3 are implemented locally. Phase 3 adds a manifest-only tool registry and permission layer.
 
 ## Completed
 
@@ -20,6 +20,8 @@ Phase 0, Phase 1, and Phase 2 are implemented locally. Phase 2 adds a determinis
 - Spec validation helper script.
 - Deterministic mock orchestrator for sequential workflows.
 - Integration tests for mock workflow compilation and execution.
+- Manifest-only tool registry and permission decisions.
+- Unit tests for tool allowlists, disabled tools, missing permissions, and approval gates.
 
 ## Not started
 
@@ -33,4 +35,4 @@ Phase 0, Phase 1, and Phase 2 are implemented locally. Phase 2 adds a determinis
 
 ## Next recommended phase
 
-Phase 3: implement the tool registry and permission layer with manifests only, without executing risky tools.
+Phase 4: implement the memory layer foundation with local persistence and retention/redaction policies, without adding long-term vector memory yet.
