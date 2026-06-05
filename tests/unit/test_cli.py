@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from team_factory.cli import main
-from team_factory.llm import LLMResponse
+from team_factory.llm import LLMProvider, LLMResponse
 
 cli_main = importlib.import_module("team_factory.cli.main")
 
@@ -405,3 +405,61 @@ def test_cli_run_llm_smoke_success_with_mocked_adapter(tmp_path, capsys, monkeyp
     assert payload["no_brokerage"] is True
     assert payload["output_text"] == "Smoke result: simulation only."
     assert json.loads(output_path.read_text())["request_id"] == "req_cli_smoke"
+
+
+def test_cli_run_llm_smoke_codex_exec_does_not_require_api_key(
+    tmp_path, capsys, monkeypatch
+) -> None:
+    captured_config = {}
+
+    class FakeAdapter:
+        def generate(self, request):
+            assert "Do not call, request, or simulate use of tools" in request.prompt
+            return LLMResponse(
+                provider="codex_exec",
+                model="gpt-5.5-codex",
+                text="Codex smoke result: simulation only.",
+                usage=None,
+            )
+
+    def fake_build_adapter(config):
+        captured_config["provider"] = config.provider
+        captured_config["codex_bin"] = config.codex_bin
+        return FakeAdapter()
+
+    monkeypatch.setenv("TEAM_FACTORY_ENABLE_REAL_LLM", "1")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setattr(cli_main, "build_llm_adapter", fake_build_adapter)
+    output_path = tmp_path / "codex_smoke.json"
+
+    exit_code = main(
+        [
+            "run-llm-smoke",
+            "team_specs/trading_strategy_research_team.yaml",
+            "Research ETF trend following for simulation only.",
+            "--agent-id",
+            "strategy_ideator",
+            "--provider",
+            "codex_exec",
+            "--model",
+            "gpt-5.5-codex",
+            "--enable-real-llm",
+            "--acknowledge-no-tools",
+            "--acknowledge-simulation-only",
+            "--codex-bin",
+            "/custom/codex",
+            "--out",
+            str(output_path),
+            "--json",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert captured_config == {
+        "provider": LLMProvider.CODEX_EXEC,
+        "codex_bin": "/custom/codex",
+    }
+    assert payload["provider"] == "codex_exec"
+    assert payload["output_text"] == "Codex smoke result: simulation only."
+    assert json.loads(output_path.read_text())["provider"] == "codex_exec"

@@ -22,7 +22,7 @@ Implemented now:
 - Regression trace snapshots and replay-oriented JSONL run-log persistence.
 - Checked-in golden snapshots and explicit `golden-update --approve` workflow.
 - CI-ready deterministic regression script and lightweight release checklist.
-- Strict opt-in LLM adapter layer with deterministic default and OpenAI Responses adapter path.
+- Strict opt-in LLM adapter layer with deterministic default, OpenAI Responses API path, and Codex CLI path for Codex/ChatGPT sign-in quota.
 - Guarded real-LLM single-agent smoke workflow with no tools/trading/brokerage.
 
 Not implemented yet:
@@ -56,7 +56,22 @@ Deterministic default using the Codex model identifier:
   --instructions "Be concise."
 ```
 
-Real provider path requires explicit opt-in and is not used by CI:
+Codex quota path requires explicit opt-in and is not used by CI. It does not
+require `OPENAI_API_KEY`; it uses the local `codex` CLI sign-in. The factory's
+`gpt-5.5-codex` default is mapped to the Codex CLI model id `gpt-5.5` for this
+provider:
+
+```bash
+export TEAM_FACTORY_ENABLE_REAL_LLM=1
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --provider codex_exec \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm
+```
+
+OpenAI API path also requires explicit opt-in and is not used by CI:
 
 ```bash
 export TEAM_FACTORY_ENABLE_REAL_LLM=1
@@ -69,16 +84,16 @@ export OPENAI_API_KEY=...
   --enable-real-llm
 ```
 
-Guarded single-agent LLM smoke workflow, still no tools/trading/brokerage:
+Guarded single-agent LLM smoke workflow using Codex quota, still no
+tools/trading/brokerage:
 
 ```bash
 export TEAM_FACTORY_ENABLE_REAL_LLM=1
-export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-llm-smoke \
   team_specs/trading_strategy_research_team.yaml \
   "Research robust long-term trend-following strategies on ETF for simulation only." \
   --agent-id strategy_ideator \
-  --provider openai_responses \
+  --provider codex_exec \
   --model gpt-5.5-codex \
   --reasoning-effort medium \
   --enable-real-llm \

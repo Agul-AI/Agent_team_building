@@ -204,7 +204,8 @@
       <p>
         The factory now includes a guarded smoke workflow command:
         <code>run-llm-smoke</code>. It sends exactly one selected agent prompt to the
-        real LLM adapter. It does not run the full team, does not call tools, does not
+        real LLM adapter. You can run it through <code>codex_exec</code> to use your
+        local Codex/ChatGPT sign-in quota without a separate API key. It does not run the full team, does not call tools, does not
         fetch market data, does not backtest, does not connect brokerage accounts, and
         does not place trades.
       </p>
@@ -217,7 +218,31 @@
         <li>It requires <code>--acknowledge-simulation-only</code>.</li>
         <li>It writes a safe JSON artifact if you pass <code>--out</code>.</li>
       </ul>
-      <h3>Command for your ETF long-term strategy team</h3>
+      <h3>Recommended command: use Codex quota, no API key</h3>
+      <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-llm-smoke \
+  team_specs/trading_strategy_research_team.yaml \
+  "Research robust long-term trend-following strategies on ETF for simulation only." \
+  --agent-id strategy_ideator \
+  --provider codex_exec \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm \
+  --acknowledge-no-tools \
+  --acknowledge-simulation-only \
+  --out examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator.json</code></pre>
+      <p>
+        This command uses the <code>codex</code> CLI already installed with the Codex app.
+        It launches an ephemeral <code>codex exec</code> session in an empty temporary
+        folder with <code>--sandbox read-only</code>, ignored user/project rules, and
+        <code>approval_policy="never"</code>. In other words, it spends Codex usage for
+        one text response, but it is still not a tool-execution or trading system.
+        The command can keep the factory default <code>gpt-5.5-codex</code>; internally
+        the <code>codex_exec</code> adapter maps it to the Codex CLI model id
+        <code>gpt-5.5</code>.
+      </p>
+      <h3>Optional command: use OpenAI API credits instead</h3>
       <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
 export OPENAI_API_KEY=...
 
@@ -231,7 +256,7 @@ export OPENAI_API_KEY=...
   --enable-real-llm \
   --acknowledge-no-tools \
   --acknowledge-simulation-only \
-  --out examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator.json</code></pre>
+  --out examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator_api.json</code></pre>
       <p>
         Start with <code>strategy_ideator</code> because it is the supervisor/planner in
         <code>research_backtest_review</code>. Later, you can run separate smoke tests for
@@ -249,7 +274,9 @@ export OPENAI_API_KEY=...
       <h3>If the command fails</h3>
       <ul>
         <li>If it says <code>TEAM_FACTORY_ENABLE_REAL_LLM</code>, export the env var exactly as shown.</li>
-        <li>If it says <code>missing API key</code>, set <code>OPENAI_API_KEY</code>.</li>
+        <li>If <code>codex_exec</code> says it cannot find <code>codex</code>, run <code>command -v codex</code> or pass <code>--codex-bin /path/to/codex</code>.</li>
+        <li>If <code>codex_exec</code> says you are not signed in, run <code>codex login</code> and choose ChatGPT sign-in.</li>
+        <li>If <code>openai_responses</code> says <code>missing API key</code>, set <code>OPENAI_API_KEY</code> or use <code>--provider codex_exec</code> instead.</li>
         <li>If it asks for acknowledgements, add both required acknowledgement flags.</li>
         <li>If it says <code>agent id not found</code>, choose an agent id from the YAML spec.</li>
       </ul>
@@ -431,7 +458,20 @@ export OPENAI_API_KEY=...
   --instructions "Be concise." \
   --json</code></pre>
       <p>
-        Real OpenAI Responses calls require explicit opt-in and still send no tools:
+        If you want to use your Codex quota instead of a separate API key, use
+        <code>codex_exec</code>. This launches the local Codex CLI in a locked-down
+        smoke-test session:
+      </p>
+      <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --provider codex_exec \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm</code></pre>
+      <p>
+        Real OpenAI Responses API calls are optional. They require explicit opt-in,
+        a separate API key, and still send no tools:
       </p>
       <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
 export OPENAI_API_KEY=...
@@ -444,7 +484,9 @@ export OPENAI_API_KEY=...
       <p>
         The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>,
         <code>parallel_tool_calls=false</code>, and <code>reasoning.effort="medium"</code>.
-        It is not wired into agent runtime orchestration yet.
+        The <code>codex_exec</code> adapter instead uses a locked-down local
+        <code>codex exec</code> process. Neither path is wired into full agent runtime
+        orchestration yet.
       </p>
     </section>
 

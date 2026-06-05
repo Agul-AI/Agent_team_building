@@ -112,20 +112,29 @@ The current completed scope is Phase 0 through Phase 13.
   - `LLMProvider`
 - Added deterministic default adapter: `DeterministicLLMAdapter`.
 - Added real-provider path: `OpenAIResponsesLLMAdapter`.
+- Added Codex quota path: `CodexExecLLMAdapter`, which uses the local `codex`
+  CLI in an ephemeral, read-only, isolated temporary directory and does not
+  require `OPENAI_API_KEY`.
 - Added `llm-generate` CLI command.
 - Set the default model identifier to `gpt-5.5-codex` with `medium` reasoning
   effort, with optional override through `TEAM_FACTORY_DEFAULT_LLM_MODEL`,
   `TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT`, `--model`, or
   `--reasoning-effort`.
 - Real LLM usage requires all gates:
-  1. provider `openai_responses`
+  1. provider `openai_responses` or `codex_exec`
   2. config/CLI opt-in: `enable_real_llm=True` or `--enable-real-llm`
   3. environment gate: `TEAM_FACTORY_ENABLE_REAL_LLM=1`
-  4. API key from configured env var, default `OPENAI_API_KEY`
+  4. for `openai_responses` only: API key from configured env var, default `OPENAI_API_KEY`
+  5. for `codex_exec` only: a working local Codex CLI sign-in
 - Real LLM requests intentionally send no tools:
   - `tools=[]`
   - `tool_choice="none"`
   - `parallel_tool_calls=false`
+- Codex quota smoke requests intentionally run `codex exec` with an ephemeral
+  session, `read-only` sandboxing, `approval_policy="never"`, ignored
+  user/project rules, and an isolated empty working directory.
+- For `codex_exec`, the factory-level `gpt-5.5-codex` default is mapped to the
+  Codex CLI model id `gpt-5.5`.
 - CI and tests use only deterministic mocks; they do not make real LLM calls.
 
 

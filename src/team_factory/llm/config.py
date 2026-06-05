@@ -14,6 +14,7 @@ class LLMProvider(StrEnum):
 
     DETERMINISTIC = "deterministic"
     OPENAI_RESPONSES = "openai_responses"
+    CODEX_EXEC = "codex_exec"
 
 
 LLMReasoningEffort = Literal["none", "minimal", "low", "medium", "high", "xhigh"]
@@ -63,6 +64,9 @@ class LLMAdapterConfig(BaseModel):
     timeout_seconds: float = Field(default=30.0, gt=0)
     max_output_tokens: int | None = Field(default=512, gt=0)
     temperature: float | None = Field(default=0.2, ge=0.0, le=2.0)
+    codex_bin: str = "codex"
+    codex_sandbox: Literal["read-only"] = "read-only"
+    codex_approval_policy: Literal["never"] = "never"
 
     @model_validator(mode="after")
     def validate_real_provider_opt_in(self) -> LLMAdapterConfig:

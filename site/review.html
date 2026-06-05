@@ -32,7 +32,8 @@
         snapshots, run logs, golden baselines, CI/release checks, and a strict opt-in
         LLM adapter layer with <code>gpt-5.5-codex</code> and
         <code>medium</code> reasoning as the default model setting, plus a guarded
-        single-agent LLM smoke workflow.
+        single-agent LLM smoke workflow that can use either OpenAI API credits or
+        local Codex/ChatGPT sign-in quota through <code>codex_exec</code>.
       </p>
     </section>
 
@@ -43,6 +44,7 @@
           <li>No autonomous tool execution exists.</li>
           <li>Tool checks authorize or reject proposed calls only.</li>
           <li>Real LLM calls are not default and are excluded from CI.</li>
+          <li>The <code>codex_exec</code> provider uses an ephemeral, read-only, isolated Codex CLI session and does not require <code>OPENAI_API_KEY</code>.</li>
           <li>The LLM smoke command requires no-tools and simulation-only acknowledgements.</li>
           <li><code>gpt-5.5-codex</code> plus medium reasoning is the default model setting, but deterministic remains the default provider.</li>
           <li>Golden snapshot updates require explicit <code>--approve</code>.</li>

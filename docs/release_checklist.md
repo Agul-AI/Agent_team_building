@@ -26,6 +26,7 @@ real LLM/tool execution.
 - [ ] Confirm no high-impact action can execute without explicit approval.
 - [ ] Confirm real LLM usage is behind `TEAM_FACTORY_ENABLE_REAL_LLM=1` and explicit config/CLI opt-in.
 - [ ] Confirm real LLM requests do not include tools unless a later tool-calling phase has been reviewed.
+- [ ] Confirm `codex_exec` runs only with an ephemeral, read-only, isolated Codex CLI session.
 - [ ] Confirm `run-llm-smoke` requires no-tools and simulation-only acknowledgements.
 - [ ] Confirm tool manifests have risk and side-effect levels.
 - [ ] Confirm critical/high-impact tools require approval.

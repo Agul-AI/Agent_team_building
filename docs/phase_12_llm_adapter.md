@@ -10,6 +10,8 @@ configuration and environment opt-in.
 - `LLMAdapter` interface.
 - `DeterministicLLMAdapter` default test adapter.
 - `OpenAIResponsesLLMAdapter` strict opt-in adapter.
+- `CodexExecLLMAdapter` strict opt-in adapter for local Codex CLI sign-in/quota
+  without `OPENAI_API_KEY`.
 - CLI command: `llm-generate`.
 - Tests for deterministic output, opt-in gates, API-key gate, and OpenAI request payload shape.
 
@@ -17,10 +19,11 @@ configuration and environment opt-in.
 
 Real LLM providers require all of the following:
 
-1. `provider=openai_responses`
+1. `provider=openai_responses` or `provider=codex_exec`
 2. `enable_real_llm=True` in config, or `--enable-real-llm` in the CLI
 3. environment variable `TEAM_FACTORY_ENABLE_REAL_LLM=1`
-4. an API key in the configured env var, default `OPENAI_API_KEY`
+4. for `openai_responses`: an API key in the configured env var, default `OPENAI_API_KEY`
+5. for `codex_exec`: a working local Codex CLI sign-in
 
 If any gate is missing, the adapter fails before making a network request.
 
@@ -38,6 +41,12 @@ The OpenAI Responses adapter sends plain text generation requests only. It sets:
 
 The adapter does not expose function calling, built-in tools, external tools, or
 agent tool execution in this phase.
+
+The `codex_exec` adapter uses `codex exec` in an ephemeral, read-only, isolated
+temporary directory with `approval_policy="never"` and ignored user/project
+rules. It is intended for smoke-test text generation through Codex quota, not
+autonomous tool execution. The factory-level `gpt-5.5-codex` default is mapped
+to the Codex CLI's `gpt-5.5` model id for this provider.
 
 ## CLI examples
 
@@ -63,6 +72,18 @@ export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --provider openai_responses \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm
+```
+
+Codex CLI adapter, explicit opt-in, no API key:
+
+```bash
+export TEAM_FACTORY_ENABLE_REAL_LLM=1
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --provider codex_exec \
   --model gpt-5.5-codex \
   --reasoning-effort medium \
   --enable-real-llm

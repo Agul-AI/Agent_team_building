@@ -1,6 +1,7 @@
 """LLM adapter layer with deterministic default and strict real-provider opt-in."""
 
 from team_factory.llm.adapters import (
+    CodexExecLLMAdapter,
     DeterministicLLMAdapter,
     LLMAdapter,
     LLMAdapterError,
@@ -26,6 +27,7 @@ from team_factory.llm.smoke import (
 )
 
 __all__ = [
+    "CodexExecLLMAdapter",
     "DeterministicLLMAdapter",
     "DEFAULT_LLM_MODEL",
     "DEFAULT_LLM_REASONING_EFFORT",

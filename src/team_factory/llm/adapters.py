@@ -1,15 +1,21 @@
 """LLM adapters.
 
-The deterministic adapter remains the default. The OpenAI Responses adapter is a
-strict opt-in provider path and never sends tools or executes tool calls.
+The deterministic adapter remains the default. Real-provider paths are strict
+opt-in. The OpenAI Responses adapter never sends tools or executes tool calls.
+The Codex exec adapter uses the local Codex CLI in an isolated read-only
+noninteractive session so a user can spend Codex/ChatGPT quota without exposing
+brokerage, market-data, or tool execution.
 """
 
 from __future__ import annotations
 
 import json
+import subprocess
+import tempfile
 import urllib.error
 import urllib.request
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any, Protocol
 
 from team_factory.llm.config import LLMAdapterConfig, LLMProvider
@@ -22,6 +28,25 @@ class LLMAdapterError(RuntimeError):
 
 class _Opener(Protocol):
     def open(self, request: urllib.request.Request, timeout: float): ...
+
+
+class _CompletedProcess(Protocol):
+    returncode: int
+    stdout: str
+    stderr: str
+
+
+class _Runner(Protocol):
+    def __call__(
+        self,
+        args: list[str],
+        *,
+        input: str,
+        text: bool,
+        capture_output: bool,
+        timeout: float,
+        cwd: str,
+    ) -> _CompletedProcess: ...
 
 
 class LLMAdapter(ABC):
@@ -127,6 +152,101 @@ class OpenAIResponsesLLMAdapter(LLMAdapter):
         return payload
 
 
+class CodexExecLLMAdapter(LLMAdapter):
+    """Strict opt-in Codex CLI adapter that uses Codex sign-in/quota.
+
+    This adapter is for local smoke tests only. It launches `codex exec` in a
+    temporary empty directory, with an ephemeral session, read-only sandboxing,
+    approval policy set to `never`, no project/user rules, and no persisted
+    session files. That means it can ask Codex for a text answer using the
+    user's existing Codex authentication, but it is not a general orchestration
+    or tool-execution bridge.
+    """
+
+    def __init__(
+        self,
+        config: LLMAdapterConfig,
+        *,
+        runner: _Runner | None = None,
+    ) -> None:
+        if config.provider != LLMProvider.CODEX_EXEC:
+            raise LLMAdapterError("CodexExecLLMAdapter requires codex_exec config")
+        self.config = config
+        self._runner = runner or subprocess.run
+
+    def generate(self, request: LLMRequest) -> LLMResponse:
+        with tempfile.TemporaryDirectory(prefix="team-factory-codex-smoke-") as workdir:
+            output_path = Path(workdir) / "last_message.txt"
+            prompt = _compose_codex_exec_prompt(request)
+            command = self._build_command(workdir, output_path)
+            try:
+                completed = self._runner(
+                    command,
+                    input=prompt,
+                    text=True,
+                    capture_output=True,
+                    timeout=self.config.timeout_seconds,
+                    cwd=workdir,
+                )
+            except (OSError, subprocess.SubprocessError, TimeoutError) as exc:
+                raise LLMAdapterError(f"Codex exec request failed: {exc}") from exc
+
+            stdout = completed.stdout or ""
+            stderr = completed.stderr or ""
+            if completed.returncode != 0:
+                raise LLMAdapterError(
+                    "Codex exec request failed with exit code "
+                    f"{completed.returncode}: {stderr or stdout}"
+                )
+
+            if output_path.exists():
+                text = output_path.read_text(encoding="utf-8").strip()
+            else:
+                text = stdout.strip()
+
+            return LLMResponse(
+                provider=LLMProvider.CODEX_EXEC.value,
+                model=self.config.model,
+                text=text,
+                raw_response={
+                    "codex_exec": True,
+                    "codex_cli_model": _codex_exec_model(self.config.model),
+                    "factory_model": self.config.model,
+                    "sandbox": self.config.codex_sandbox,
+                    "approval_policy": self.config.codex_approval_policy,
+                    "ephemeral": True,
+                    "isolated_empty_workdir": True,
+                    "ignore_user_config": True,
+                    "ignore_rules": True,
+                    "stdout_tail": stdout[-4000:],
+                    "stderr_tail": stderr[-4000:],
+                },
+                usage=None,
+            )
+
+    def _build_command(self, workdir: str, output_path: Path) -> list[str]:
+        codex_model = _codex_exec_model(self.config.model)
+        return [
+            self.config.codex_bin,
+            "exec",
+            "--ephemeral",
+            "--skip-git-repo-check",
+            "--ignore-user-config",
+            "--ignore-rules",
+            "--sandbox",
+            self.config.codex_sandbox,
+            "--cd",
+            workdir,
+            "--model",
+            codex_model,
+            "--config",
+            f'approval_policy="{self.config.codex_approval_policy}"',
+            "--output-last-message",
+            str(output_path),
+            "-",
+        ]
+
+
 def build_llm_adapter(config: LLMAdapterConfig) -> LLMAdapter:
     """Construct an adapter for a config."""
 
@@ -134,6 +254,8 @@ def build_llm_adapter(config: LLMAdapterConfig) -> LLMAdapter:
         return DeterministicLLMAdapter(config)
     if config.provider == LLMProvider.OPENAI_RESPONSES:
         return OpenAIResponsesLLMAdapter(config)
+    if config.provider == LLMProvider.CODEX_EXEC:
+        return CodexExecLLMAdapter(config)
     raise LLMAdapterError(f"unsupported LLM provider: {config.provider}")
 
 
@@ -158,3 +280,28 @@ def _extract_response_text(raw: dict[str, Any]) -> str:
                 if isinstance(text, str):
                     chunks.append(text)
     return "".join(chunks)
+
+
+def _compose_codex_exec_prompt(request: LLMRequest) -> str:
+    sections = [
+        "You are being used as a locked-down text-generation adapter for the "
+        "Agent Team Factory.",
+        "Return the final answer only.",
+        "Do not run shell commands.",
+        "Do not inspect files.",
+        "Do not call tools, apps, MCP servers, browser, market-data sources, "
+        "brokerage services, or external systems.",
+    ]
+    if request.instructions:
+        sections.extend(["", "Adapter instructions:", request.instructions])
+    sections.extend(["", "Prompt:", request.prompt])
+    return "\n".join(sections)
+
+
+def _codex_exec_model(model: str) -> str:
+    """Map factory-level Codex aliases to Codex CLI model ids."""
+
+    aliases = {
+        "gpt-5.5-codex": "gpt-5.5",
+    }
+    return aliases.get(model, model)

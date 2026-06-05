@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 13 guarded LLM smoke workflow are implemented locally. Phase 13 adds a strict opt-in, single-agent, real-LLM smoke command that cannot call tools and is excluded from CI/default flows.
+Phase 0 through Phase 13 guarded LLM smoke workflow are implemented locally. Phase 13 adds a strict opt-in, single-agent, real-LLM smoke command that cannot call tools and is excluded from CI/default flows. It now supports a `codex_exec` provider so local smoke runs can use the user's Codex/ChatGPT sign-in quota without `OPENAI_API_KEY`.
 
 ## Completed
 
@@ -50,6 +50,10 @@ Phase 0 through Phase 13 guarded LLM smoke workflow are implemented locally. Pha
 - Deterministic default LLM adapter.
 - Default LLM model identifier set to `gpt-5.5-codex` with `medium` reasoning effort, while provider defaults to deterministic.
 - Strict opt-in OpenAI Responses adapter with no tools.
+- Strict opt-in Codex CLI adapter (`codex_exec`) that runs `codex exec` in an
+  ephemeral, read-only, isolated temporary directory, maps the factory
+  `gpt-5.5-codex` default to Codex CLI model id `gpt-5.5`, and does not require
+  an API key.
 - `llm-generate` CLI command.
 - Guarded `run-llm-smoke` CLI command for one selected agent, with no tools/trading/brokerage and explicit acknowledgements.
 

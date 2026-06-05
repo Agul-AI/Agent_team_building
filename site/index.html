@@ -18,7 +18,7 @@
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
       evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
-      Phase 0 through Phase 13 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, CI/release checks, a strict opt-in LLM adapter, and a guarded single-agent LLM smoke workflow.
+      Phase 0 through Phase 13 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, CI/release checks, a strict opt-in LLM adapter, and a guarded single-agent LLM smoke workflow that can use Codex quota through <code>codex_exec</code>.
     </p>
   </header>
 
@@ -50,7 +50,7 @@
           <li class="status-ok">Checked-in golden snapshots and approval/update workflow are complete.</li>
           <li class="status-ok">CI regression commands and release checklist are complete.</li>
           <li class="status-ok">Strict opt-in LLM adapter layer is complete; <code>gpt-5.5-codex</code> with medium reasoning is the default model setting and deterministic remains the default provider.</li>
-          <li class="status-ok">Guarded single-agent LLM smoke workflow is complete; it requires explicit no-tools and simulation-only acknowledgements.</li>
+          <li class="status-ok">Guarded single-agent LLM smoke workflow is complete; it supports <code>codex_exec</code> for Codex/ChatGPT sign-in quota and requires explicit no-tools and simulation-only acknowledgements.</li>
           <li class="status-next">LLM-backed orchestration, actual tool execution, semantic scoring, vector memory, production deployment, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
@@ -85,7 +85,7 @@
         <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
       </p>
       <p>
-        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, local CLI flows, a local API skeleton, structured JSONL observability, regression/replay foundations, golden baselines, CI/release checks, and an opt-in LLM adapter layer. LangGraph, real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and runtime memory integration are deferred
+        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, local CLI flows, a local API skeleton, structured JSONL observability, regression/replay foundations, golden baselines, CI/release checks, and an opt-in LLM adapter layer with API and Codex CLI paths. LangGraph, LLM-backed team orchestration, actual tool execution, semantic scoring, vector memory, production deployment, and runtime memory integration are deferred
         so the system remains simple and inspectable at the foundation.
       </p>
     </section>

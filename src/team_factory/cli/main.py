@@ -109,7 +109,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     llm_parser = subparsers.add_parser(
         "llm-generate",
-        help="Generate text with deterministic adapter or explicit opt-in real LLM adapter.",
+        help=(
+            "Generate text with deterministic adapter or explicit opt-in real LLM adapter "
+            "(OpenAI API or local Codex exec)."
+        ),
     )
     llm_parser.add_argument("prompt", help="Prompt text.")
     llm_parser.add_argument("--instructions", help="Optional instructions/developer message.")
@@ -131,6 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     llm_parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
     llm_parser.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_parser.add_argument("--codex-bin", default="codex", help="Codex CLI binary for codex_exec.")
     llm_parser.add_argument("--timeout-seconds", type=float, default=30.0)
     llm_parser.add_argument("--max-output-tokens", type=int, default=512)
     llm_parser.add_argument("--temperature", type=float, default=0.2)
@@ -158,9 +162,12 @@ def build_parser() -> argparse.ArgumentParser:
     llm_smoke_parser.add_argument("--agent-id", required=True, help="Single agent to smoke test.")
     llm_smoke_parser.add_argument(
         "--provider",
-        choices=[LLMProvider.OPENAI_RESPONSES.value],
+        choices=[LLMProvider.OPENAI_RESPONSES.value, LLMProvider.CODEX_EXEC.value],
         required=True,
-        help="Real LLM provider. Deterministic provider is intentionally not allowed here.",
+        help=(
+            "Real LLM provider. Use codex_exec to spend Codex/ChatGPT quota without "
+            "an OpenAI API key. Deterministic provider is intentionally not allowed here."
+        ),
     )
     llm_smoke_parser.add_argument("--model", default=default_llm_model())
     llm_smoke_parser.add_argument(
@@ -180,6 +187,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     llm_smoke_parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
     llm_smoke_parser.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_smoke_parser.add_argument(
+        "--codex-bin",
+        default="codex",
+        help="Codex CLI binary for codex_exec.",
+    )
     llm_smoke_parser.add_argument("--timeout-seconds", type=float, default=30.0)
     llm_smoke_parser.add_argument("--max-output-tokens", type=int, default=512)
     llm_smoke_parser.add_argument("--temperature", type=float, default=0.2)
@@ -507,6 +519,7 @@ def _cmd_llm_generate(args: argparse.Namespace) -> int:
         enable_real_llm=args.enable_real_llm,
         api_key_env=args.api_key_env,
         base_url=args.base_url,
+        codex_bin=args.codex_bin,
         timeout_seconds=args.timeout_seconds,
         max_output_tokens=args.max_output_tokens,
         temperature=args.temperature,
@@ -536,6 +549,7 @@ def _cmd_run_llm_smoke(args: argparse.Namespace) -> int:
         enable_real_llm=args.enable_real_llm,
         api_key_env=args.api_key_env,
         base_url=args.base_url,
+        codex_bin=args.codex_bin,
         timeout_seconds=args.timeout_seconds,
         max_output_tokens=args.max_output_tokens,
         temperature=args.temperature,
