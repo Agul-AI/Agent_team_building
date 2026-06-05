@@ -182,6 +182,21 @@
         next engineering step is to add a guarded LLM-backed single-agent smoke workflow
         that is excluded from CI by default and still cannot call tools.
       </p>
+      <h3>What your successful output means</h3>
+      <p>
+        If you see <code>persisted run ... to runs.jsonl</code>, <code>wrote trace snapshot ...</code>,
+        and agent outputs ending with <code>final_synthesizer</code>, the local mock team ran
+        successfully. The output is a deterministic process check: it confirms the agents,
+        workflow, logging, and safety boundaries are wired correctly.
+      </p>
+      <p>
+        If Python says it <code>can't open file ... scripts/team_factory_cli.py</code>, you are
+        probably in the wrong terminal folder. First run:
+      </p>
+      <pre><code>cd /Users/cosdis/Desktop/AI_builder/AI_Team_building</code></pre>
+      <p>
+        Then rerun the command. The script paths in this tutorial are relative to the repo root.
+      </p>
     </section>
 
     <section class="card">
