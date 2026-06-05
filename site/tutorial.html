@@ -122,6 +122,68 @@
       </p>
     </section>
 
+    <section class="card hero-card">
+      <h2>You are ready to set up this trading team. What is next?</h2>
+      <p>
+        In the current foundation, "set up the team" means creating a local, repeatable
+        research workspace around the checked-in YAML spec. It does <strong>not</strong>
+        mean live market data, real backtests, brokerage connections, or trade execution yet.
+      </p>
+      <ol class="step-list">
+        <li>
+          <strong>Create an artifact folder.</strong>
+          Keep setup traces, run logs, and evaluation reports together.
+        </li>
+        <li>
+          <strong>Validate the spec.</strong>
+          Confirm the trading team YAML is structurally valid.
+        </li>
+        <li>
+          <strong>Inspect the team order.</strong>
+          Confirm the supervisor-worker flow is what you expect.
+        </li>
+        <li>
+          <strong>Run your first mock research task.</strong>
+          Put your long-term strategy question in the quoted task string.
+        </li>
+        <li>
+          <strong>Save the run and trace.</strong>
+          This gives you a baseline for later improvements.
+        </li>
+        <li>
+          <strong>Run deterministic evaluations.</strong>
+          Generate a report that checks the team against its simulation-only scenarios.
+        </li>
+      </ol>
+      <pre><code>mkdir -p examples/artifacts/trading_setup
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate \
+  team_specs/trading_strategy_research_team.yaml
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
+  team_specs/trading_strategy_research_team.yaml \
+  --workflow-id research_backtest_review
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
+  team_specs/trading_strategy_research_team.yaml \
+  "Research robust long-term trend-following strategies for simulation only." \
+  --workflow-id research_backtest_review \
+  --run-log examples/artifacts/trading_setup/runs.jsonl \
+  --snapshot-out examples/artifacts/trading_setup/initial_trace.json
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py eval \
+  team_specs/trading_strategy_research_team.yaml \
+  --out-dir examples/artifacts/trading_setup/evaluation_reports
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-log-list \
+  --run-log examples/artifacts/trading_setup/runs.jsonl</code></pre>
+      <p>
+        If these commands pass, the team is set up locally in deterministic mock mode. The
+        next engineering step is to add a guarded LLM-backed single-agent smoke workflow
+        that is excluded from CI by default and still cannot call tools.
+      </p>
+    </section>
+
     <section class="card">
       <h2>0. Start from the repo root</h2>
       <p>Run these commands once in a terminal:</p>
