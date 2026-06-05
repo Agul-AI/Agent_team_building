@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phase 8**.
 
 Implemented now:
 
@@ -18,6 +18,7 @@ Implemented now:
 - Deterministic evaluation harness and Markdown scenario reports.
 - Mock-compatible workflow support for sequential, critique-revision, and supervisor-worker teams.
 - Local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
+- Local API skeleton and structured JSONL audit/run observability.
 
 Not implemented yet:
 
@@ -28,7 +29,7 @@ Not implemented yet:
 - Runtime memory integration.
 - Vector memory and semantic retrieval.
 - Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
-- Interactive UI flows and production API workflows.
+- Production API framework, auth/RBAC, deployment manifests, dashboards, and metrics backends.
 - Deployment.
 
 
@@ -107,6 +108,19 @@ The Phase 5 evaluation harness executes declared scenarios through supported moc
 ```
 
 The scientific, trading, and travel example teams now run through the mock evaluator. Debate, parallel-research, and custom workflows are still reported as skipped.
+
+
+## Serve the local API skeleton
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_api.py --host 127.0.0.1 --port 8765
+```
+
+Example health check:
+
+```bash
+curl -s http://127.0.0.1:8765/health
+```
 
 ## View the local website
 

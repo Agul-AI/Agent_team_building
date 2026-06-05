@@ -46,3 +46,4 @@ mypy_path = "src"
 
 [project.scripts]
 team-factory = "team_factory.cli:main"
+team-factory-api = "team_factory.api.server:main"

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 are implemented locally. Phase 7 adds local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
+Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phase 8 are implemented locally. Phase 8 adds a local API skeleton and structured JSONL audit/run observability.
 
 ## Completed
 
@@ -34,6 +34,9 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 are i
 - Local argparse CLI under `src/team_factory/cli/`.
 - Source-checkout CLI wrapper at `scripts/team_factory_cli.py`.
 - CLI tests for validation, workflow order, mock runs, tool checks, memory operations, and eval reports.
+- Local API skeleton for health, spec validation, workflow order, mock runs, tool checks, and mock evals.
+- Structured JSONL audit and compact run observability events.
+- API/observability tests.
 
 ## Not started
 
@@ -43,9 +46,9 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 are i
 - Vector memory and semantic retrieval.
 - Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
 - Interactive team creation wizard.
-- API server.
-- Deployment and monitoring.
+- Production API framework/auth/RBAC.
+- Deployment manifests, metrics backends, dashboards, and distributed tracing.
 
 ## Next recommended phase
 
-Phase 8: add deployment and monitoring foundations, starting with a local API skeleton and structured run/audit observability.
+Harden the platform by adding regression trace snapshots and replay-oriented run-log persistence before introducing real LLM/tool execution.

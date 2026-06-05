@@ -13,7 +13,7 @@
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
       evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
-      Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7: architecture/docs, the minimal team spec format, a deterministic mock orchestrator, manifest-only tool permissions, a local memory foundation, deterministic evaluation reports, runnable mock example-team workflows, and local CLI flows.
+      Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phase 8: architecture/docs, the minimal team spec format, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI flows, a local API skeleton, and JSONL observability.
     </p>
   </header>
 
@@ -40,7 +40,8 @@
           <li class="status-ok">A deterministic evaluation harness with Markdown reports is complete.</li>
           <li class="status-ok">Scientific, trading, and travel example teams run in deterministic mock mode.</li>
           <li class="status-ok">Local CLI flows are complete for core developer workflows.</li>
-          <li class="status-next">Real LLM calls, actual tool execution, semantic scoring, vector memory, API deployment, and LangGraph integration have intentionally not started.</li>
+          <li class="status-ok">Local API skeleton and JSONL observability foundations are complete.</li>
+          <li class="status-next">Real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
 
@@ -63,7 +64,7 @@
         <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
       </p>
       <p>
-        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, and local CLI flows. LangGraph, real LLM calls, actual tool execution, semantic scoring, vector memory, API deployment, and runtime memory integration are deferred
+        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, local CLI flows, a local API skeleton, and structured JSONL observability. LangGraph, real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and runtime memory integration are deferred
         so the system remains simple and inspectable at the foundation.
       </p>
     </section>
@@ -100,7 +101,7 @@
         <div class="phase"><strong>Phase 5</strong><span class="status-ok">Evaluation harness — complete.</span></div>
         <div class="phase"><strong>Phase 6</strong><span class="status-ok">Example runnable teams — complete in mock mode.</span></div>
         <div class="phase"><strong>Phase 7</strong><span class="status-ok">CLI flows — complete.</span></div>
-        <div class="phase"><strong>Phase 8</strong><span>Deployment and monitoring — next.</span></div>
+        <div class="phase"><strong>Phase 8</strong><span class="status-ok">Local API and observability — complete.</span></div>
       </div>
     </section>
 
