@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 
 from team_factory.cli import main
+from team_factory.llm import LLMResponse
+
+cli_main = importlib.import_module("team_factory.cli.main")
 
 
 def test_cli_validate_specs(capsys) -> None:
@@ -314,3 +318,90 @@ def test_cli_llm_generate_real_provider_requires_api_key(capsys, monkeypatch) ->
     captured = capsys.readouterr()
     assert exit_code == 1
     assert "missing API key" in captured.err
+
+
+def test_cli_run_llm_smoke_requires_acknowledgements(capsys) -> None:
+    exit_code = main(
+        [
+            "run-llm-smoke",
+            "team_specs/trading_strategy_research_team.yaml",
+            "Research ETF trend following for simulation only.",
+            "--agent-id",
+            "strategy_ideator",
+            "--provider",
+            "openai_responses",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "--acknowledge-no-tools" in captured.err
+
+
+def test_cli_run_llm_smoke_real_provider_requires_env_gate(capsys, monkeypatch) -> None:
+    monkeypatch.delenv("TEAM_FACTORY_ENABLE_REAL_LLM", raising=False)
+
+    exit_code = main(
+        [
+            "run-llm-smoke",
+            "team_specs/trading_strategy_research_team.yaml",
+            "Research ETF trend following for simulation only.",
+            "--agent-id",
+            "strategy_ideator",
+            "--provider",
+            "openai_responses",
+            "--enable-real-llm",
+            "--acknowledge-no-tools",
+            "--acknowledge-simulation-only",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "TEAM_FACTORY_ENABLE_REAL_LLM" in captured.err
+
+
+def test_cli_run_llm_smoke_success_with_mocked_adapter(tmp_path, capsys, monkeypatch) -> None:
+    class FakeAdapter:
+        def generate(self, request):
+            assert "Do not call, request, or simulate use of tools" in request.prompt
+            return LLMResponse(
+                provider="openai_responses",
+                model="gpt-test",
+                text="Smoke result: simulation only.",
+                request_id="req_cli_smoke",
+                usage={"input_tokens": 10, "output_tokens": 4},
+            )
+
+    monkeypatch.setenv("TEAM_FACTORY_ENABLE_REAL_LLM", "1")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(cli_main, "build_llm_adapter", lambda config: FakeAdapter())
+    output_path = tmp_path / "llm_smoke.json"
+
+    exit_code = main(
+        [
+            "run-llm-smoke",
+            "team_specs/trading_strategy_research_team.yaml",
+            "Research ETF trend following for simulation only.",
+            "--agent-id",
+            "strategy_ideator",
+            "--provider",
+            "openai_responses",
+            "--model",
+            "gpt-test",
+            "--enable-real-llm",
+            "--acknowledge-no-tools",
+            "--acknowledge-simulation-only",
+            "--out",
+            str(output_path),
+            "--json",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["agent_id"] == "strategy_ideator"
+    assert payload["no_tools"] is True
+    assert payload["no_brokerage"] is True
+    assert payload["output_text"] == "Smoke result: simulation only."
+    assert json.loads(output_path.read_text())["request_id"] == "req_cli_smoke"

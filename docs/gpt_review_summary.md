@@ -22,7 +22,7 @@ adding autonomous behavior.
 
 ## Completed implementation scope
 
-The current completed scope is Phase 0 through Phase 12.
+The current completed scope is Phase 0 through Phase 13.
 
 ### Phase 0/1: repository, docs, specs, and validation
 
@@ -128,12 +128,23 @@ The current completed scope is Phase 0 through Phase 12.
   - `parallel_tool_calls=false`
 - CI and tests use only deterministic mocks; they do not make real LLM calls.
 
+
+### Phase 13: guarded LLM-backed single-agent smoke workflow
+
+- Added `run-llm-smoke` CLI command.
+- Added safe `LLMSmokeRunResult` artifact model.
+- Added a prompt builder that injects no-tool, no-brokerage, no-trading, and simulation-only rules.
+- Real smoke runs require `TEAM_FACTORY_ENABLE_REAL_LLM=1`, `--enable-real-llm`, `--acknowledge-no-tools`, and `--acknowledge-simulation-only`.
+- The command selects exactly one `--agent-id` and does not run full team orchestration.
+- Tests use mocked adapters and do not make real LLM calls.
+
 ## Current safety posture
 
 The implementation is intentionally conservative:
 
 - No autonomous tool execution exists.
 - Real LLM usage is not default and is not used in CI.
+- The guarded LLM smoke command requires explicit no-tools and simulation-only acknowledgements.
 - Tool permission checks are manifest-only.
 - Golden snapshots and deterministic traces detect runtime drift.
 - API server is local-only and dependency-light.
@@ -166,7 +177,7 @@ The implementation is intentionally conservative:
 - `src/team_factory/memory/` — local SQLite memory foundation.
 - `src/team_factory/evaluation/` — deterministic evaluation harness.
 - `src/team_factory/observability/` — trace/golden/run-log/audit support.
-- `src/team_factory/llm/` — deterministic and strict opt-in LLM adapters.
+- `src/team_factory/llm/` — deterministic and strict opt-in LLM adapters plus guarded smoke workflow helpers.
 - `tests/` — unit/integration coverage and golden snapshots.
 - `scripts/ci_regression.sh` — CI-ready deterministic regression suite.
 
@@ -195,10 +206,9 @@ Expected current result: all tests and regression checks pass.
 
 ## Next recommended implementation phase
 
-Add a guarded LLM-backed single-agent smoke workflow that:
+Add deterministic review/evaluation of LLM smoke artifacts that:
 
-- is excluded from CI by default,
-- cannot call tools,
-- logs prompt/response metadata safely,
-- can be run only with explicit real-LLM opt-in,
+- remains excluded from CI by default,
+- checks safety properties without calling tools,
+- compares smoke output against expected properties,
 - preserves deterministic mocks as the default runtime path.

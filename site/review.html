@@ -26,12 +26,13 @@
     <section class="card">
       <h2>Implemented scope</h2>
       <p>
-        The factory currently covers Phase 0 through Phase 12: docs, team specs,
+        The factory currently covers Phase 0 through Phase 13: docs, team specs,
         validation, deterministic mock workflows, manifest-only tool authorization,
         local memory, deterministic evaluations, CLI/API flows, observability, trace
         snapshots, run logs, golden baselines, CI/release checks, and a strict opt-in
         LLM adapter layer with <code>gpt-5.5-codex</code> and
-        <code>medium</code> reasoning as the default model setting.
+        <code>medium</code> reasoning as the default model setting, plus a guarded
+        single-agent LLM smoke workflow.
       </p>
     </section>
 
@@ -42,6 +43,7 @@
           <li>No autonomous tool execution exists.</li>
           <li>Tool checks authorize or reject proposed calls only.</li>
           <li>Real LLM calls are not default and are excluded from CI.</li>
+          <li>The LLM smoke command requires no-tools and simulation-only acknowledgements.</li>
           <li><code>gpt-5.5-codex</code> plus medium reasoning is the default model setting, but deterministic remains the default provider.</li>
           <li>Golden snapshot updates require explicit <code>--approve</code>.</li>
           <li>High-impact and critical tools require approval gates.</li>

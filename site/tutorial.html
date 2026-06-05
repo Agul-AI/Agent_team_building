@@ -179,8 +179,8 @@
   --run-log examples/artifacts/strategy_building_team/runs.jsonl</code></pre>
       <p>
         If these commands pass, the team is set up locally in deterministic mock mode. The
-        next engineering step is to add a guarded LLM-backed single-agent smoke workflow
-        that is excluded from CI by default and still cannot call tools.
+        next engineering step is to run the guarded LLM smoke command below if you want
+        one real model response while still avoiding tools, brokerage, and trade execution.
       </p>
       <h3>What your successful output means</h3>
       <p>
@@ -197,6 +197,62 @@
       <p>
         Then rerun the command. The script paths in this tutorial are relative to the repo root.
       </p>
+    </section>
+
+    <section class="card hero-card">
+      <h2>Add and run a guarded LLM-backed single-agent smoke workflow</h2>
+      <p>
+        The factory now includes a guarded smoke workflow command:
+        <code>run-llm-smoke</code>. It sends exactly one selected agent prompt to the
+        real LLM adapter. It does not run the full team, does not call tools, does not
+        fetch market data, does not backtest, does not connect brokerage accounts, and
+        does not place trades.
+      </p>
+      <h3>Why this is the next safe step</h3>
+      <ul>
+        <li>It tests one real LLM response before adding full orchestration.</li>
+        <li>It requires <code>TEAM_FACTORY_ENABLE_REAL_LLM=1</code>.</li>
+        <li>It requires <code>--enable-real-llm</code>.</li>
+        <li>It requires <code>--acknowledge-no-tools</code>.</li>
+        <li>It requires <code>--acknowledge-simulation-only</code>.</li>
+        <li>It writes a safe JSON artifact if you pass <code>--out</code>.</li>
+      </ul>
+      <h3>Command for your ETF long-term strategy team</h3>
+      <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
+export OPENAI_API_KEY=...
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-llm-smoke \
+  team_specs/trading_strategy_research_team.yaml \
+  "Research robust long-term trend-following strategies on ETF for simulation only." \
+  --agent-id strategy_ideator \
+  --provider openai_responses \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm \
+  --acknowledge-no-tools \
+  --acknowledge-simulation-only \
+  --out examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator.json</code></pre>
+      <p>
+        Start with <code>strategy_ideator</code> because it is the supervisor/planner in
+        <code>research_backtest_review</code>. Later, you can run separate smoke tests for
+        <code>risk_manager</code> or <code>overfitting_critic</code>, but keep them as
+        separate single-agent checks until full LLM orchestration is deliberately added.
+      </p>
+      <h3>How to inspect the result</h3>
+      <pre><code>cat examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator.json</code></pre>
+      <p>
+        The artifact records the team id, agent id, task, model, reasoning effort, safety
+        mode, prompt, output text, request id, and token usage. It should show
+        <code>no_tools: true</code>, <code>no_brokerage: true</code>, and
+        <code>no_trading_execution: true</code>.
+      </p>
+      <h3>If the command fails</h3>
+      <ul>
+        <li>If it says <code>TEAM_FACTORY_ENABLE_REAL_LLM</code>, export the env var exactly as shown.</li>
+        <li>If it says <code>missing API key</code>, set <code>OPENAI_API_KEY</code>.</li>
+        <li>If it asks for acknowledgements, add both required acknowledgement flags.</li>
+        <li>If it says <code>agent id not found</code>, choose an agent id from the YAML spec.</li>
+      </ul>
     </section>
 
     <section class="card">
@@ -536,7 +592,7 @@ evaluation:
       <article class="card">
         <h2>Advanced improvements</h2>
         <ul>
-          <li>Add a guarded LLM-backed single-agent smoke workflow excluded from CI by default.</li>
+          <li>Add deterministic review/evaluation of guarded LLM smoke artifacts.</li>
           <li>Add streaming support for real providers behind explicit opt-in.</li>
           <li>Design real tool execution with approvals, allowlists, audit logs, and dry-run mode first.</li>
           <li>Plan LangGraph integration only after deterministic behavior and safety gates are stable.</li>
@@ -558,9 +614,9 @@ evaluation:
     <section class="card">
       <h2>Recommended next build</h2>
       <p>
-        Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by
-        default, cannot call tools, logs safe metadata, uses the existing strict opt-in LLM
-        adapter, and preserves deterministic mocks as the default path.
+        Add deterministic review/evaluation of guarded LLM smoke artifacts against the
+        team's expected safety properties, without adding autonomous tools or full
+        multi-agent orchestration.
       </p>
     </section>
   </main>

@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0 through Phase 12 opt-in LLM adapter**.
+Current completed scope: **Phase 0 through Phase 13 guarded LLM smoke workflow**.
 
 Implemented now:
 
@@ -23,10 +23,11 @@ Implemented now:
 - Checked-in golden snapshots and explicit `golden-update --approve` workflow.
 - CI-ready deterministic regression script and lightweight release checklist.
 - Strict opt-in LLM adapter layer with deterministic default and OpenAI Responses adapter path.
+- Guarded real-LLM single-agent smoke workflow with no tools/trading/brokerage.
 
 Not implemented yet:
 
-- LLM-backed agent runtime orchestration.
+- Full LLM-backed multi-agent runtime orchestration.
 - Debate, parallel-research, and custom workflow runtime semantics.
 - Tool execution.
   - Phase 3 can authorize proposed calls but intentionally does not execute them.
@@ -66,6 +67,24 @@ export OPENAI_API_KEY=...
   --model gpt-5.5-codex \
   --reasoning-effort medium \
   --enable-real-llm
+```
+
+Guarded single-agent LLM smoke workflow, still no tools/trading/brokerage:
+
+```bash
+export TEAM_FACTORY_ENABLE_REAL_LLM=1
+export OPENAI_API_KEY=...
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-llm-smoke \
+  team_specs/trading_strategy_research_team.yaml \
+  "Research robust long-term trend-following strategies on ETF for simulation only." \
+  --agent-id strategy_ideator \
+  --provider openai_responses \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
+  --enable-real-llm \
+  --acknowledge-no-tools \
+  --acknowledge-simulation-only \
+  --out examples/artifacts/strategy_building_team/llm_smoke_strategy_ideator.json
 ```
 
 ## Run the CI regression suite locally

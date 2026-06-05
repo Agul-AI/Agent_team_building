@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 adds a deterministic default LLM adapter, a `gpt-5.5-codex` plus `medium` reasoning default, and a strict opt-in OpenAI Responses adapter path.
+Phase 0 through Phase 13 guarded LLM smoke workflow are implemented locally. Phase 13 adds a strict opt-in, single-agent, real-LLM smoke command that cannot call tools and is excluded from CI/default flows.
 
 ## Completed
 
@@ -51,6 +51,7 @@ Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 ad
 - Default LLM model identifier set to `gpt-5.5-codex` with `medium` reasoning effort, while provider defaults to deterministic.
 - Strict opt-in OpenAI Responses adapter with no tools.
 - `llm-generate` CLI command.
+- Guarded `run-llm-smoke` CLI command for one selected agent, with no tools/trading/brokerage and explicit acknowledgements.
 
 ## Not started
 
@@ -65,4 +66,4 @@ Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 ad
 
 ## Next recommended phase
 
-Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by default and cannot call tools.
+Add deterministic review/evaluation of LLM smoke artifacts against declared safety properties, without adding tools or full orchestration.

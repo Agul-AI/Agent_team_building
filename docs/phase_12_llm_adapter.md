@@ -91,7 +91,6 @@ with `model`, `input`, optional `instructions`, optional `max_output_tokens`,
 - Cost tracking for real API calls.
 - Prompt templates beyond raw prompt/instructions.
 
-## Next recommended phase
+## Follow-up
 
-Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by
-default and cannot call tools.
+The guarded LLM-backed single-agent smoke workflow was added in Phase 13.

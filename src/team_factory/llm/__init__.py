@@ -17,6 +17,13 @@ from team_factory.llm.config import (
     default_llm_reasoning_effort,
 )
 from team_factory.llm.models import LLMRequest, LLMResponse
+from team_factory.llm.smoke import (
+    LLMSmokeRunResult,
+    build_single_agent_smoke_prompt,
+    find_agent,
+    run_single_agent_llm_smoke,
+    write_llm_smoke_result,
+)
 
 __all__ = [
     "DeterministicLLMAdapter",
@@ -29,8 +36,13 @@ __all__ = [
     "LLMReasoningEffort",
     "LLMRequest",
     "LLMResponse",
+    "LLMSmokeRunResult",
     "OpenAIResponsesLLMAdapter",
+    "build_single_agent_smoke_prompt",
     "build_llm_adapter",
     "default_llm_model",
     "default_llm_reasoning_effort",
+    "find_agent",
+    "run_single_agent_llm_smoke",
+    "write_llm_smoke_result",
 ]

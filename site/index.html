@@ -18,7 +18,7 @@
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
       evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
-      Phase 0 through Phase 12 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, CI/release checks, and a strict opt-in LLM adapter.
+      Phase 0 through Phase 13 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, CI/release checks, a strict opt-in LLM adapter, and a guarded single-agent LLM smoke workflow.
     </p>
   </header>
 
@@ -50,6 +50,7 @@
           <li class="status-ok">Checked-in golden snapshots and approval/update workflow are complete.</li>
           <li class="status-ok">CI regression commands and release checklist are complete.</li>
           <li class="status-ok">Strict opt-in LLM adapter layer is complete; <code>gpt-5.5-codex</code> with medium reasoning is the default model setting and deterministic remains the default provider.</li>
+          <li class="status-ok">Guarded single-agent LLM smoke workflow is complete; it requires explicit no-tools and simulation-only acknowledgements.</li>
           <li class="status-next">LLM-backed orchestration, actual tool execution, semantic scoring, vector memory, production deployment, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
@@ -126,6 +127,7 @@
         <div class="phase"><strong>Phase 10</strong><span class="status-ok">Golden snapshots — complete.</span></div>
         <div class="phase"><strong>Phase 11</strong><span class="status-ok">CI/release checks — complete.</span></div>
         <div class="phase"><strong>Phase 12</strong><span class="status-ok">Opt-in LLM adapter — complete.</span></div>
+        <div class="phase"><strong>Phase 13</strong><span class="status-ok">Guarded LLM smoke workflow — complete.</span></div>
       </div>
     </section>
 

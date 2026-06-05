@@ -25,6 +25,8 @@ from team_factory.llm import (
     build_llm_adapter,
     default_llm_model,
     default_llm_reasoning_effort,
+    run_single_agent_llm_smoke,
+    write_llm_smoke_result,
 )
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
 from team_factory.observability import (
@@ -143,6 +145,52 @@ def build_parser() -> argparse.ArgumentParser:
     )
     llm_parser.add_argument("--json", action="store_true", help="Emit JSON response.")
     llm_parser.set_defaults(func=_cmd_llm_generate)
+
+    llm_smoke_parser = subparsers.add_parser(
+        "run-llm-smoke",
+        help=(
+            "Run a guarded real-LLM single-agent smoke workflow. Strict opt-in only; "
+            "no tools, trading, or brokerage execution."
+        ),
+    )
+    llm_smoke_parser.add_argument("spec", help="Spec YAML file.")
+    llm_smoke_parser.add_argument("task", help="Smoke-test task.")
+    llm_smoke_parser.add_argument("--agent-id", required=True, help="Single agent to smoke test.")
+    llm_smoke_parser.add_argument(
+        "--provider",
+        choices=[LLMProvider.OPENAI_RESPONSES.value],
+        required=True,
+        help="Real LLM provider. Deterministic provider is intentionally not allowed here.",
+    )
+    llm_smoke_parser.add_argument("--model", default=default_llm_model())
+    llm_smoke_parser.add_argument(
+        "--enable-real-llm",
+        action="store_true",
+        help="Required config opt-in. TEAM_FACTORY_ENABLE_REAL_LLM=1 is also required.",
+    )
+    llm_smoke_parser.add_argument(
+        "--acknowledge-no-tools",
+        action="store_true",
+        help="Required acknowledgement that this smoke test cannot call tools.",
+    )
+    llm_smoke_parser.add_argument(
+        "--acknowledge-simulation-only",
+        action="store_true",
+        help="Required acknowledgement that trading work is research/simulation only.",
+    )
+    llm_smoke_parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
+    llm_smoke_parser.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_smoke_parser.add_argument("--timeout-seconds", type=float, default=30.0)
+    llm_smoke_parser.add_argument("--max-output-tokens", type=int, default=512)
+    llm_smoke_parser.add_argument("--temperature", type=float, default=0.2)
+    llm_smoke_parser.add_argument(
+        "--reasoning-effort",
+        choices=["none", "minimal", "low", "medium", "high", "xhigh"],
+        default=default_llm_reasoning_effort(),
+    )
+    llm_smoke_parser.add_argument("--out", help="Write safe smoke-result JSON artifact.")
+    llm_smoke_parser.add_argument("--json", action="store_true", help="Emit JSON result.")
+    llm_smoke_parser.set_defaults(func=_cmd_run_llm_smoke)
 
     memory_put_parser = subparsers.add_parser("memory-put", help="Put a local memory record.")
     _add_memory_db_arg(memory_put_parser)
@@ -472,6 +520,43 @@ def _cmd_llm_generate(args: argparse.Namespace) -> int:
         print(response.model_dump_json(indent=2))
     else:
         print(response.text)
+    return 0
+
+
+def _cmd_run_llm_smoke(args: argparse.Namespace) -> int:
+    if not args.acknowledge_no_tools:
+        raise ValueError("run-llm-smoke requires --acknowledge-no-tools")
+    if not args.acknowledge_simulation_only:
+        raise ValueError("run-llm-smoke requires --acknowledge-simulation-only")
+
+    spec = load_team_spec(args.spec)
+    config = LLMAdapterConfig(
+        provider=LLMProvider(args.provider),
+        model=args.model,
+        enable_real_llm=args.enable_real_llm,
+        api_key_env=args.api_key_env,
+        base_url=args.base_url,
+        timeout_seconds=args.timeout_seconds,
+        max_output_tokens=args.max_output_tokens,
+        temperature=args.temperature,
+        reasoning_effort=args.reasoning_effort,
+    )
+    adapter = build_llm_adapter(config)
+    result = run_single_agent_llm_smoke(
+        team=spec,
+        agent_id=args.agent_id,
+        task=args.task,
+        adapter=adapter,
+        config=config,
+    )
+    if args.out:
+        output_path = write_llm_smoke_result(result, args.out)
+        if not args.json:
+            print(f"wrote guarded LLM smoke result {output_path}")
+    if args.json:
+        print(result.model_dump_json(indent=2))
+    else:
+        print(result.output_text)
     return 0
 
 
