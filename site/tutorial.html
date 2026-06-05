@@ -14,70 +14,89 @@
       <a href="review.html">GPT Review Summary</a>
     </nav>
     <span class="badge">Agent Team Factory</span>
-    <h1>How to Use and Improve the Factory</h1>
+    <h1>Use the Factory First, Then Improve It</h1>
     <p class="lead">
-      This tutorial walks through local setup, deterministic workflows, permissions,
-      memory, evaluations, the opt-in LLM adapter, and safe ways to extend the factory.
-      The default path is deterministic and reviewable; real LLM calls are strictly opt-in.
+      Start by running the factory exactly as it works today: validate a team spec,
+      inspect workflow order, run deterministic mock workflows, evaluate results, and try
+      the safe LLM adapter. After that, use the second half of this tutorial to improve
+      the factory without breaking deterministic regression or safety gates.
     </p>
   </header>
 
   <main>
-    <section class="card">
-      <h2>Quick start</h2>
-      <p>Run these commands from the repository root:</p>
-      <pre><code>cd /Users/cosdis/Desktop/AI_builder/AI_Team_building
-~/.venvs/myenv/bin/python -m pip install -e '.[dev]'
-~/.venvs/myenv/bin/python -m pytest
-scripts/ci_regression.sh</code></pre>
-      <p>
-        The regression script validates specs, checks golden snapshots, runs deterministic
-        mock evaluations, compares traces, exercises run logs, runs a deterministic LLM
-        adapter smoke test, and checks the local API dispatcher.
-      </p>
-    </section>
-
-    <section class="card">
-      <h2>Repository tour</h2>
+    <section class="card hero-card">
+      <h2>What you will learn</h2>
       <div class="two-col">
-        <ul>
-          <li><code>team_specs/*.yaml</code> — user-authored team definitions.</li>
-          <li><code>src/team_factory/specs/</code> — Pydantic schema and YAML loader.</li>
-          <li><code>src/team_factory/orchestration/</code> — deterministic mock runtime.</li>
-          <li><code>src/team_factory/tools/</code> — permission checks, no execution.</li>
-          <li><code>src/team_factory/memory/</code> — SQLite local memory foundation.</li>
-        </ul>
-        <ul>
-          <li><code>src/team_factory/evaluation/</code> — deterministic scenario reports.</li>
-          <li><code>src/team_factory/observability/</code> — traces, run logs, audit logs.</li>
-          <li><code>src/team_factory/api/</code> — local API skeleton.</li>
-          <li><code>src/team_factory/llm/</code> — deterministic and opt-in LLM adapters.</li>
-          <li><code>tests/golden_snapshots/</code> — checked-in regression baselines.</li>
-        </ul>
+        <div>
+          <h3>Part 1 — Use it</h3>
+          <ol>
+            <li>Install and verify the local package.</li>
+            <li>Validate existing team YAML specs.</li>
+            <li>Run mock workflows and inspect outputs.</li>
+            <li>Use traces, golden snapshots, evaluations, memory, and local API calls.</li>
+            <li>Try the deterministic LLM adapter and understand strict real-LLM opt-in.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Part 2 — Improve it</h3>
+          <ol>
+            <li>Edit or add team specs safely.</li>
+            <li>Add scenarios, tests, docs, and website updates.</li>
+            <li>Extend runtime support while preserving deterministic mocks.</li>
+            <li>Plan real LLM/tool execution only behind explicit safety gates.</li>
+          </ol>
+        </div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>1. Validate team specs</h2>
-      <p>Start every change by validating the YAML specs.</p>
-      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate team_specs/*.yaml</code></pre>
+    <section class="section-heading" aria-labelledby="use-first-heading">
+      <span class="badge">Part 1</span>
+      <h2 id="use-first-heading">Use the factory today</h2>
       <p>
-        Validation catches malformed agent definitions, workflow references, safety policy
-        issues, and high-impact tool approval gaps before runtime code is involved.
+        Follow these steps in order. They teach the current factory without requiring real
+        LLM calls, external tools, or production services.
       </p>
     </section>
 
     <section class="card">
-      <h2>2. Inspect workflow order</h2>
-      <p>Use workflow order checks to understand which agents will run in mock mode.</p>
-      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
-  team_specs/travel_planning_team.yaml \
-  --workflow-id plan_trip</code></pre>
+      <h2>0. Start from the repo root</h2>
+      <p>Run these commands once in a terminal:</p>
+      <pre><code>cd /Users/cosdis/Desktop/AI_builder/AI_Team_building
+~/.venvs/myenv/bin/python -m pip install -e '.[dev]'
+~/.venvs/myenv/bin/python -m pytest</code></pre>
+      <p>
+        If this passes, the Python package, tests, and local development environment are ready.
+      </p>
     </section>
 
     <section class="card">
-      <h2>3. Run deterministic mock workflows</h2>
-      <p>Mock runs are the safest way to debug specs and orchestration shape.</p>
+      <h2>1. Validate the team specs</h2>
+      <p>
+        Specs are the main user-facing input. Validate them before running or changing anything.
+      </p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate team_specs/*.yaml</code></pre>
+      <p>You should see each spec marked <code>OK</code>.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. Inspect a workflow before running it</h2>
+      <p>
+        Workflow order shows which agents the deterministic mock runtime will execute.
+      </p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
+  team_specs/travel_planning_team.yaml \
+  --workflow-id plan_trip</code></pre>
+      <p>
+        Use this when learning a team or checking that a YAML workflow references the expected agents.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>3. Run a deterministic mock workflow</h2>
+      <p>
+        Mock runs are the safest way to understand team behavior because they are repeatable and
+        do not call real LLMs or tools.
+      </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
   team_specs/travel_planning_team.yaml \
   "Plan a weekend city trip." \
@@ -86,8 +105,11 @@ scripts/ci_regression.sh</code></pre>
     </section>
 
     <section class="card">
-      <h2>4. Record and compare traces</h2>
-      <p>Trace snapshots make deterministic workflow drift visible.</p>
+      <h2>4. Save a trace and compare it</h2>
+      <p>
+        Trace snapshots turn a run into a deterministic JSON artifact. This is how you detect
+        accidental workflow drift.
+      </p>
       <pre><code>mkdir -p examples/artifacts/tutorial
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-snapshot \
   team_specs/travel_planning_team.yaml \
@@ -98,28 +120,30 @@ scripts/ci_regression.sh</code></pre>
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-compare \
   tests/golden_snapshots/travel_planning_team__plan_trip__weekend_city_trip.json \
   examples/artifacts/tutorial/travel_trace.json</code></pre>
+      <p>
+        If the comparison reports a difference, inspect whether the change was intentional.
+      </p>
     </section>
 
     <section class="card">
-      <h2>5. Use golden snapshots intentionally</h2>
-      <p>Check golden snapshots before merging runtime-affecting changes:</p>
+      <h2>5. Check golden snapshots</h2>
+      <p>Golden snapshots are checked-in baselines for supported example workflows.</p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-check team_specs/*.yaml</code></pre>
       <p>
-        Only update baselines when the change is expected and reviewed. The update command
-        requires explicit approval:
+        Only update baselines when the behavior change is expected and reviewed:
       </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-update team_specs/*.yaml --approve</code></pre>
     </section>
 
     <section class="card">
       <h2>6. Run deterministic evaluations</h2>
-      <p>Generate scenario reports for the example teams:</p>
+      <p>Evaluations generate Markdown reports for each example team.</p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py eval \
   team_specs/scientific_discovery_team.yaml \
   team_specs/trading_strategy_research_team.yaml \
   team_specs/travel_planning_team.yaml \
   --out-dir examples/artifacts/evaluation_reports</code></pre>
-      <p>Reports are Markdown files under the selected output directory.</p>
+      <p>Open the generated Markdown files under <code>examples/artifacts/evaluation_reports</code>.</p>
     </section>
 
     <section class="card">
@@ -134,14 +158,15 @@ scripts/ci_regression.sh</code></pre>
   --purpose "Review strategy risk" \
   --permission read_market_data</code></pre>
       <p>
-        If a tool is high-impact or critical, specs and authorization flows must require
-        human approval before future execution support is considered.
+        Use this to understand permission rules before any future real tool execution phase.
       </p>
     </section>
 
     <section class="card">
-      <h2>8. Manage local memory</h2>
-      <p>The memory store is currently standalone and useful for testing retention/redaction.</p>
+      <h2>8. Try local memory</h2>
+      <p>
+        Memory is currently standalone. Use it to test storage, lookup, redaction, and retention.
+      </p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py memory-put \
   --db examples/artifacts/tutorial/memory.sqlite3 \
   --category project \
@@ -158,20 +183,19 @@ scripts/ci_regression.sh</code></pre>
     </section>
 
     <section class="card">
-      <h2>9. Generate text with the LLM adapter layer</h2>
+      <h2>9. Try the LLM adapter safely</h2>
       <p>
-        The factory now uses <code>gpt-5.5-codex</code> as the default model identifier
-        with <code>medium</code> reasoning effort. The provider is still deterministic
-        unless real LLM use is explicitly enabled. Override the model/reasoning defaults
-        with <code>--model</code>, <code>--reasoning-effort</code>,
-        <code>TEAM_FACTORY_DEFAULT_LLM_MODEL</code>, or
-        <code>TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT</code>.
+        The default model setting is <code>gpt-5.5-codex</code> with <code>medium</code>
+        reasoning effort, but the default provider remains deterministic. That means this
+        first command is safe for CI and local regression.
       </p>
-      <p>Deterministic adapter using the Codex model identifier, safe for CI and local regression:</p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
-  --instructions "Be concise."</code></pre>
-      <p>Real OpenAI Responses adapter, strict opt-in and still no tools:</p>
+  --instructions "Be concise." \
+  --json</code></pre>
+      <p>
+        Real OpenAI Responses calls require explicit opt-in and still send no tools:
+      </p>
       <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
 export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
@@ -181,10 +205,9 @@ export OPENAI_API_KEY=...
   --reasoning-effort medium \
   --enable-real-llm</code></pre>
       <p>
-        The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>, and
-        <code>parallel_tool_calls=false</code>, with
-        <code>reasoning.effort="medium"</code> by default. It is not wired into agent
-        runtime orchestration yet.
+        The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>,
+        <code>parallel_tool_calls=false</code>, and <code>reasoning.effort="medium"</code>.
+        It is not wired into agent runtime orchestration yet.
       </p>
     </section>
 
@@ -198,50 +221,110 @@ export OPENAI_API_KEY=...
 curl -X POST http://127.0.0.1:8765/specs/validate \
   -H 'Content-Type: application/json' \
   -d '{"spec_path":"team_specs/travel_planning_team.yaml"}'</code></pre>
-      <p>The API is a local development skeleton and should not be exposed as production service.</p>
+      <p>The API is a local development skeleton and should not be exposed as a production service.</p>
     </section>
 
     <section class="card">
-      <h2>How to improve the factory safely</h2>
+      <h2>11. Run the full local regression suite</h2>
+      <p>Use this before committing any meaningful change:</p>
+      <pre><code>scripts/ci_regression.sh
+scripts/release_check.sh</code></pre>
+      <p>
+        These commands exercise tests, linting, spec validation, golden snapshots, deterministic
+        evaluations, trace comparison, run logs, the deterministic LLM adapter, and the API dispatcher.
+      </p>
+    </section>
+
+    <section class="section-heading" aria-labelledby="improve-heading">
+      <span class="badge">Part 2</span>
+      <h2 id="improve-heading">Improve the factory after you can use it</h2>
+      <p>
+        Once the usage flow above is familiar, improve the factory in small safe increments.
+        Every improvement should preserve deterministic tests and explicit safety gates.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Improvement loop</h2>
       <ol class="step-list">
-        <li>
-          <strong>Add or edit a team spec first.</strong>
-          Define agents, workflows, tools, safety policy, and evaluation scenarios in YAML.
-        </li>
-        <li>
-          <strong>Validate before runtime changes.</strong>
-          Run spec validation and workflow-order checks after every spec edit.
-        </li>
-        <li>
-          <strong>Keep deterministic mocks current.</strong>
-          Add or update tests before introducing nondeterministic behavior.
-        </li>
-        <li>
-          <strong>Use golden snapshots intentionally.</strong>
-          Check snapshots by default; update them only with <code>--approve</code> after review.
-        </li>
-        <li>
-          <strong>Do not add tool execution casually.</strong>
-          Any real tool execution phase should include approvals, audit logs, risk levels,
-          and narrow allowlists.
-        </li>
-        <li>
-          <strong>Keep real LLM usage opt-in.</strong>
-          New real-provider paths should retain deterministic fallbacks and stay out of CI by default.
-        </li>
-        <li>
-          <strong>Document each phase.</strong>
-          Add a focused <code>docs/phase_*.md</code> file and update the progress dashboard.
-        </li>
+        <li><strong>Edit one thing.</strong> Start with a team spec, scenario, test, or small runtime change.</li>
+        <li><strong>Validate specs.</strong> Run <code>team_factory_cli.py validate team_specs/*.yaml</code>.</li>
+        <li><strong>Run a mock workflow.</strong> Confirm behavior is deterministic and understandable.</li>
+        <li><strong>Check traces/goldens.</strong> Use <code>golden-check</code>; update only with <code>--approve</code>.</li>
+        <li><strong>Run tests and CI regression.</strong> Use <code>pytest</code>, <code>ruff</code>, and <code>scripts/ci_regression.sh</code>.</li>
+        <li><strong>Document the change.</strong> Update docs and this website when behavior changes.</li>
       </ol>
+    </section>
+
+    <section class="card">
+      <h2>Where to make improvements</h2>
+      <div class="two-col">
+        <ul>
+          <li><code>team_specs/*.yaml</code> — define or revise teams, agents, workflows, tools, and scenarios.</li>
+          <li><code>src/team_factory/specs/</code> — evolve the schema and validation rules.</li>
+          <li><code>src/team_factory/orchestration/</code> — add deterministic workflow runtime support.</li>
+          <li><code>src/team_factory/tools/</code> — strengthen permission and approval logic.</li>
+          <li><code>src/team_factory/memory/</code> — improve retention, redaction, and future runtime integration.</li>
+        </ul>
+        <ul>
+          <li><code>src/team_factory/evaluation/</code> — add scenarios and report fields.</li>
+          <li><code>src/team_factory/observability/</code> — improve traces, run logs, and audit records.</li>
+          <li><code>src/team_factory/api/</code> — add local endpoints for developer workflows.</li>
+          <li><code>src/team_factory/llm/</code> — expand adapters while keeping strict opt-in.</li>
+          <li><code>site/</code> and <code>docs/</code> — keep users and reviewers oriented.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Easy improvements</h2>
+        <ul>
+          <li>Add a new evaluation scenario to an existing team spec.</li>
+          <li>Add a new example team YAML and validation tests.</li>
+          <li>Add clearer CLI examples to this tutorial.</li>
+          <li>Add more golden snapshots after deterministic workflows are supported.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Medium improvements</h2>
+        <ul>
+          <li>Add another mock-compatible workflow pattern.</li>
+          <li>Improve audit/run-log metadata for reproducibility.</li>
+          <li>Add API routes that wrap existing CLI-safe workflows.</li>
+          <li>Add memory retrieval to deterministic mock outputs without making real calls.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Advanced improvements</h2>
+        <ul>
+          <li>Add a guarded LLM-backed single-agent smoke workflow excluded from CI by default.</li>
+          <li>Add streaming support for real providers behind explicit opt-in.</li>
+          <li>Design real tool execution with approvals, allowlists, audit logs, and dry-run mode first.</li>
+          <li>Plan LangGraph integration only after deterministic behavior and safety gates are stable.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Safety rules for future improvements</h2>
+      <ul>
+        <li>Default behavior should remain deterministic unless the user explicitly opts into real providers.</li>
+        <li>Real LLM usage must stay behind <code>TEAM_FACTORY_ENABLE_REAL_LLM=1</code> and CLI/config opt-in.</li>
+        <li>No real tool execution should be added without approval gates, risk levels, and audit logs.</li>
+        <li>Every runtime change should have tests and, when applicable, golden snapshot coverage.</li>
+        <li>Docs and the local website should describe both how to use the feature and how to review it.</li>
+      </ul>
     </section>
 
     <section class="card">
       <h2>Recommended next build</h2>
       <p>
         Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by
-        default, cannot call tools, logs safe metadata, and preserves deterministic mocks as
-        the default path.
+        default, cannot call tools, logs safe metadata, uses the existing strict opt-in LLM
+        adapter, and preserves deterministic mocks as the default path.
       </p>
     </section>
   </main>
