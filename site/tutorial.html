@@ -155,7 +155,7 @@
           Generate a report that checks the team against its simulation-only scenarios.
         </li>
       </ol>
-      <pre><code>mkdir -p examples/artifacts/trading_setup
+      <pre><code>mkdir -p examples/artifacts/strategy_building_team
 
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate \
   team_specs/trading_strategy_research_team.yaml
@@ -168,20 +168,56 @@
   team_specs/trading_strategy_research_team.yaml \
   "Research robust long-term trend-following strategies for simulation only." \
   --workflow-id research_backtest_review \
-  --run-log examples/artifacts/trading_setup/runs.jsonl \
-  --snapshot-out examples/artifacts/trading_setup/initial_trace.json
+  --run-log examples/artifacts/strategy_building_team/runs.jsonl \
+  --snapshot-out examples/artifacts/strategy_building_team/initial_trace.json
 
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py eval \
   team_specs/trading_strategy_research_team.yaml \
-  --out-dir examples/artifacts/trading_setup/evaluation_reports
+  --out-dir examples/artifacts/strategy_building_team/evaluation_reports
 
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-log-list \
-  --run-log examples/artifacts/trading_setup/runs.jsonl</code></pre>
+  --run-log examples/artifacts/strategy_building_team/runs.jsonl</code></pre>
       <p>
         If these commands pass, the team is set up locally in deterministic mock mode. The
         next engineering step is to add a guarded LLM-backed single-agent smoke workflow
         that is excluded from CI by default and still cannot call tools.
       </p>
+    </section>
+
+    <section class="card">
+      <h2>Where do I put my task?</h2>
+      <p>
+        Use <code>examples/artifacts/strategy_building_team</code> for generated outputs such as
+        run logs, traces, and reports. The folder name is flexible, but keep it under
+        <code>examples/artifacts/</code> because that path is ignored by git. Use plural
+        <code>artifacts</code>, not singular <code>artifact</code>.
+      </p>
+      <p>
+        Put one-off research tasks in the runtime command, not in the YAML file. The YAML
+        defines the team structure; the quoted task string defines what you want this run
+        to research.
+      </p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
+  team_specs/trading_strategy_research_team.yaml \
+  "Research robust long-term trend-following strategies for simulation only." \
+  --workflow-id research_backtest_review \
+  --run-log examples/artifacts/strategy_building_team/runs.jsonl \
+  --snapshot-out examples/artifacts/strategy_building_team/initial_trace.json</code></pre>
+      <p>
+        Add tasks to <code>trading_strategy_research_team.yaml</code> only when you want a
+        reusable evaluation scenario. In that case, add an item under
+        <code>evaluation.scenarios</code> with an <code>id</code>, an <code>input</code>, and
+        <code>expected_properties</code>. Do not put ad hoc tasks into <code>workflows</code>;
+        workflows describe agent order and stopping criteria.
+      </p>
+      <pre><code>evaluation:
+  scenarios:
+    - id: "long_term_trend_following_research"
+      input: "Research robust long-term trend-following strategies for simulation only."
+      expected_properties:
+        - "states that results are not guaranteed"
+        - "includes drawdown, costs, turnover, and slippage"
+        - "flags overfitting and data leakage risks"</code></pre>
     </section>
 
     <section class="card">
