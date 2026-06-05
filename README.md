@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0 through Phase 11 CI/release hardening**.
+Current completed scope: **Phase 0 through Phase 12 opt-in LLM adapter**.
 
 Implemented now:
 
@@ -22,10 +22,11 @@ Implemented now:
 - Regression trace snapshots and replay-oriented JSONL run-log persistence.
 - Checked-in golden snapshots and explicit `golden-update --approve` workflow.
 - CI-ready deterministic regression script and lightweight release checklist.
+- Strict opt-in LLM adapter layer with deterministic default and OpenAI Responses adapter path.
 
 Not implemented yet:
 
-- Real LLM orchestration.
+- LLM-backed agent runtime orchestration.
 - Debate, parallel-research, and custom workflow runtime semantics.
 - Tool execution.
   - Phase 3 can authorize proposed calls but intentionally does not execute them.
@@ -36,6 +37,29 @@ Not implemented yet:
 - Deployment.
 
 
+
+
+## Generate text with the LLM adapter layer
+
+Deterministic default:
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --instructions "Be concise."
+```
+
+Real provider path requires explicit opt-in and is not used by CI:
+
+```bash
+export TEAM_FACTORY_ENABLE_REAL_LLM=1
+export OPENAI_API_KEY=...
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --provider openai_responses \
+  --model gpt-5 \
+  --enable-real-llm
+```
 
 ## Run the CI regression suite locally
 

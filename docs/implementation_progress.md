@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 11 CI/release hardening are implemented locally. Phase 11 adds CI-ready deterministic regression commands and a lightweight release checklist.
+Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 adds a deterministic default LLM adapter and a strict opt-in OpenAI Responses adapter path.
 
 ## Completed
 
@@ -46,6 +46,10 @@ Phase 0 through Phase 11 CI/release hardening are implemented locally. Phase 11 
 - `scripts/ci_regression.sh` deterministic regression suite.
 - `.github/workflows/ci.yml` GitHub Actions workflow.
 - `scripts/release_check.sh` and `docs/release_checklist.md`.
+- Provider-neutral LLM request/response models.
+- Deterministic default LLM adapter.
+- Strict opt-in OpenAI Responses adapter with no tools.
+- `llm-generate` CLI command.
 
 ## Not started
 
@@ -60,4 +64,4 @@ Phase 0 through Phase 11 CI/release hardening are implemented locally. Phase 11 
 
 ## Next recommended phase
 
-Introduce the first real LLM adapter behind deterministic mocks, with strict opt-in configuration and no autonomous tool execution.
+Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by default and cannot call tools.

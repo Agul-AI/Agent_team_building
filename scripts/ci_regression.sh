@@ -58,6 +58,12 @@ echo "== Run-log smoke =="
   >/dev/null
 "$PYTHON_BIN" scripts/team_factory_cli.py run-log-list --run-log "$ARTIFACT_DIR/runs.jsonl"
 
+
+echo "== Deterministic LLM adapter smoke =="
+"$PYTHON_BIN" scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --instructions "Be concise."
+
 echo "== API direct smoke =="
 "$PYTHON_BIN" - <<'PY'
 from team_factory.api import TeamFactoryAPI

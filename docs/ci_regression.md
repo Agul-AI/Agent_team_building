@@ -27,7 +27,8 @@ PYTHON_BIN=python scripts/ci_regression.sh
 5. deterministic mock evaluations
 6. trace snapshot/compare smoke test
 7. run-log persistence smoke test
-8. local API direct smoke test
+8. deterministic LLM adapter smoke test
+9. local API direct smoke test
 
 ## Artifacts
 

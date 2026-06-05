@@ -17,6 +17,13 @@ from typing import Any
 from pydantic import ValidationError
 
 from team_factory.evaluation import EvaluationHarness, write_markdown_report
+from team_factory.llm import (
+    LLMAdapterConfig,
+    LLMAdapterError,
+    LLMProvider,
+    LLMRequest,
+    build_llm_adapter,
+)
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
 from team_factory.observability import (
     DEFAULT_GOLDEN_SNAPSHOT_DIR,
@@ -94,6 +101,33 @@ def build_parser() -> argparse.ArgumentParser:
     tool_parser.add_argument("--approval-id", help="Traceable approval id when approved.")
     tool_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
     tool_parser.set_defaults(func=_cmd_tool_check)
+
+
+    llm_parser = subparsers.add_parser(
+        "llm-generate",
+        help="Generate text with deterministic adapter or explicit opt-in real LLM adapter.",
+    )
+    llm_parser.add_argument("prompt", help="Prompt text.")
+    llm_parser.add_argument("--instructions", help="Optional instructions/developer message.")
+    llm_parser.add_argument(
+        "--provider",
+        choices=[item.value for item in LLMProvider],
+        default=LLMProvider.DETERMINISTIC.value,
+        help="LLM provider. Real providers require explicit opt-in.",
+    )
+    llm_parser.add_argument("--model", default="deterministic-mock", help="Model id.")
+    llm_parser.add_argument(
+        "--enable-real-llm",
+        action="store_true",
+        help="Required config opt-in for real providers; env gate is also required.",
+    )
+    llm_parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
+    llm_parser.add_argument("--base-url", default="https://api.openai.com/v1")
+    llm_parser.add_argument("--timeout-seconds", type=float, default=30.0)
+    llm_parser.add_argument("--max-output-tokens", type=int, default=512)
+    llm_parser.add_argument("--temperature", type=float, default=0.2)
+    llm_parser.add_argument("--json", action="store_true", help="Emit JSON response.")
+    llm_parser.set_defaults(func=_cmd_llm_generate)
 
     memory_put_parser = subparsers.add_parser("memory-put", help="Put a local memory record.")
     _add_memory_db_arg(memory_put_parser)
@@ -236,7 +270,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return int(args.func(args))
-    except (TeamSpecLoadError, WorkflowRunError, ValidationError, ValueError) as exc:
+    except (
+        TeamSpecLoadError,
+        WorkflowRunError,
+        ValidationError,
+        ValueError,
+        LLMAdapterError,
+    ) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
@@ -395,6 +435,28 @@ def _cmd_tool_check(args: argparse.Namespace) -> int:
         if decision.approval_required:
             print("approval_required: true")
     return 0 if decision.allowed else 2
+
+
+def _cmd_llm_generate(args: argparse.Namespace) -> int:
+    config = LLMAdapterConfig(
+        provider=LLMProvider(args.provider),
+        model=args.model,
+        enable_real_llm=args.enable_real_llm,
+        api_key_env=args.api_key_env,
+        base_url=args.base_url,
+        timeout_seconds=args.timeout_seconds,
+        max_output_tokens=args.max_output_tokens,
+        temperature=args.temperature,
+    )
+    adapter = build_llm_adapter(config)
+    response = adapter.generate(
+        LLMRequest(prompt=args.prompt, instructions=args.instructions, metadata={"source": "cli"})
+    )
+    if args.json:
+        print(response.model_dump_json(indent=2))
+    else:
+        print(response.text)
+    return 0
 
 
 def _cmd_memory_put(args: argparse.Namespace) -> int:

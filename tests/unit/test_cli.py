@@ -262,3 +262,52 @@ def test_cli_trace_compare_detects_difference(tmp_path, capsys) -> None:
 
     assert compare_code == 2
     assert compare_out.startswith("DIFF")
+
+
+def test_cli_llm_generate_deterministic(capsys) -> None:
+    exit_code = main(["llm-generate", "Hello", "--instructions", "Be concise."])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "[deterministic-llm]" in output
+    assert "prompt=Hello" in output
+
+
+def test_cli_llm_generate_real_provider_requires_opt_in(capsys, monkeypatch) -> None:
+    monkeypatch.delenv("TEAM_FACTORY_ENABLE_REAL_LLM", raising=False)
+
+    exit_code = main(
+        [
+            "llm-generate",
+            "Hello",
+            "--provider",
+            "openai_responses",
+            "--model",
+            "gpt-test",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "real LLM providers require" in captured.err
+
+
+def test_cli_llm_generate_real_provider_requires_api_key(capsys, monkeypatch) -> None:
+    monkeypatch.setenv("TEAM_FACTORY_ENABLE_REAL_LLM", "1")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    exit_code = main(
+        [
+            "llm-generate",
+            "Hello",
+            "--provider",
+            "openai_responses",
+            "--model",
+            "gpt-test",
+            "--enable-real-llm",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "missing API key" in captured.err

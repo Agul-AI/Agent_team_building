@@ -50,7 +50,7 @@ Phase 0/1 implemented the foundation:
 - validation tests
 - example team specs
 
-Phase 2 adds deterministic mock execution for sequential workflows. Phase 3 adds manifest-only tool authorization. Phase 4 adds standalone SQLite memory persistence, retention, and redaction. Phase 5 adds deterministic mock evaluation reports. Phase 6 adds mock-compatible critique-revision and supervisor-worker workflow support. Phase 7 adds local CLI flows. Phase 8 adds a local API skeleton and JSONL observability. Phase 9 hardening adds regression trace snapshots and replay-oriented run-log persistence. Phase 10 adds checked-in golden snapshots and an explicit approval/update workflow. Phase 11 adds CI-ready deterministic regression commands and a lightweight release checklist. Real LLM execution, actual tool execution, runtime memory integration, vector memory, semantic evaluation scoring, and production deployment services are future phases.
+Phase 2 adds deterministic mock execution for sequential workflows. Phase 3 adds manifest-only tool authorization. Phase 4 adds standalone SQLite memory persistence, retention, and redaction. Phase 5 adds deterministic mock evaluation reports. Phase 6 adds mock-compatible critique-revision and supervisor-worker workflow support. Phase 7 adds local CLI flows. Phase 8 adds a local API skeleton and JSONL observability. Phase 9 hardening adds regression trace snapshots and replay-oriented run-log persistence. Phase 10 adds checked-in golden snapshots and an explicit approval/update workflow. Phase 11 adds CI-ready deterministic regression commands and a lightweight release checklist. Phase 12 adds the first strict opt-in real LLM adapter path while keeping deterministic mocks as the default. LLM-backed orchestration, actual tool execution, runtime memory integration, vector memory, semantic evaluation scoring, and production deployment services are future phases.
 
 ## E. Alternative architectures and tradeoffs
 
@@ -242,6 +242,7 @@ Phase 1 includes three example specs:
 | Phase 9 | Regression trace snapshots and replay run logs | Implemented locally |
 | Phase 10 | Golden snapshots and approval workflow | Implemented locally |
 | Phase 11 | CI regression commands and release checklist | Implemented locally |
+| Phase 12 | Strict opt-in LLM adapter layer | Implemented locally |
 
 ## P. First 10 Codex tasks
 

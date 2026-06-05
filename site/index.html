@@ -13,7 +13,7 @@
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
       evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
-      Phase 0 through Phase 11 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, and CI/release checks.
+      Phase 0 through Phase 12 hardening: architecture/docs, specs, deterministic mock orchestration, manifest-only tool permissions, local memory, deterministic reports, local CLI/API flows, JSONL observability, regression trace snapshots, replay run logs, checked-in golden baselines, CI/release checks, and a strict opt-in LLM adapter.
     </p>
   </header>
 
@@ -44,7 +44,8 @@
           <li class="status-ok">Regression trace snapshots and replay-oriented run logs are complete.</li>
           <li class="status-ok">Checked-in golden snapshots and approval/update workflow are complete.</li>
           <li class="status-ok">CI regression commands and release checklist are complete.</li>
-          <li class="status-next">Real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and LangGraph integration have intentionally not started.</li>
+          <li class="status-ok">Strict opt-in LLM adapter layer is complete; deterministic remains default.</li>
+          <li class="status-next">LLM-backed orchestration, actual tool execution, semantic scoring, vector memory, production deployment, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
 
@@ -67,7 +68,7 @@
         <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
       </p>
       <p>
-        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, local CLI flows, a local API skeleton, structured JSONL observability, regression/replay foundations, golden baselines, and CI/release checks. LangGraph, real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and runtime memory integration are deferred
+        The current implementation includes spec validation, deterministic mock runtime support for the example workflows, manifest-only tool authorization, standalone local memory persistence, deterministic evaluation reports, local CLI flows, a local API skeleton, structured JSONL observability, regression/replay foundations, golden baselines, CI/release checks, and an opt-in LLM adapter layer. LangGraph, real LLM calls, actual tool execution, semantic scoring, vector memory, production deployment, and runtime memory integration are deferred
         so the system remains simple and inspectable at the foundation.
       </p>
     </section>
@@ -108,6 +109,7 @@
         <div class="phase"><strong>Phase 9</strong><span class="status-ok">Regression traces and replay logs — complete.</span></div>
         <div class="phase"><strong>Phase 10</strong><span class="status-ok">Golden snapshots — complete.</span></div>
         <div class="phase"><strong>Phase 11</strong><span class="status-ok">CI/release checks — complete.</span></div>
+        <div class="phase"><strong>Phase 12</strong><span class="status-ok">Opt-in LLM adapter — complete.</span></div>
       </div>
     </section>
 
