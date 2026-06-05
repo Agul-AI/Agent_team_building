@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -15,7 +16,10 @@ class LLMProvider(StrEnum):
     OPENAI_RESPONSES = "openai_responses"
 
 
-DEFAULT_LLM_MODEL = "gpt-5.3-codex"
+LLMReasoningEffort = Literal["none", "minimal", "low", "medium", "high", "xhigh"]
+
+DEFAULT_LLM_MODEL = "gpt-5.5-codex"
+DEFAULT_LLM_REASONING_EFFORT: LLMReasoningEffort = "medium"
 
 
 def default_llm_model() -> str:
@@ -26,6 +30,15 @@ def default_llm_model() -> str:
     """
 
     return os.environ.get("TEAM_FACTORY_DEFAULT_LLM_MODEL", DEFAULT_LLM_MODEL)
+
+
+def default_llm_reasoning_effort() -> str:
+    """Return the configured default reasoning effort."""
+
+    return os.environ.get(
+        "TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT",
+        DEFAULT_LLM_REASONING_EFFORT,
+    )
 
 
 class LLMAdapterConfig(BaseModel):
@@ -40,6 +53,10 @@ class LLMAdapterConfig(BaseModel):
 
     provider: LLMProvider = LLMProvider.DETERMINISTIC
     model: str = Field(default_factory=default_llm_model)
+    reasoning_effort: LLMReasoningEffort | None = Field(
+        default_factory=default_llm_reasoning_effort,
+        validate_default=True,
+    )
     enable_real_llm: bool = False
     api_key_env: str = "OPENAI_API_KEY"
     base_url: str = "https://api.openai.com/v1"

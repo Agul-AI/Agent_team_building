@@ -41,10 +41,11 @@ agent tool execution in this phase.
 
 ## CLI examples
 
-The default model identifier is `gpt-5.3-codex`, the Codex coding model id. The
-provider remains deterministic by default, so CI and local regression still avoid
-network calls. Override the model with `--model` or
-`TEAM_FACTORY_DEFAULT_LLM_MODEL`.
+The default model identifier is `gpt-5.5-codex` with `medium` reasoning effort.
+The provider remains deterministic by default, so CI and local regression still
+avoid network calls. Override the model/reasoning defaults with `--model`,
+`--reasoning-effort`, `TEAM_FACTORY_DEFAULT_LLM_MODEL`, or
+`TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT`.
 
 Deterministic default using the Codex model identifier:
 
@@ -62,7 +63,8 @@ export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --provider openai_responses \
-  --model gpt-5.3-codex \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
   --enable-real-llm
 ```
 
@@ -75,7 +77,8 @@ POST https://api.openai.com/v1/responses
 ```
 
 with `model`, `input`, optional `instructions`, optional `max_output_tokens`,
-`tools=[]`, and `tool_choice=none`.
+`reasoning={"effort":"medium"}` by default, `tools=[]`, and
+`tool_choice=none`.
 
 ## Still not implemented
 

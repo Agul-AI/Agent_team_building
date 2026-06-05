@@ -265,12 +265,15 @@ def test_cli_trace_compare_detects_difference(tmp_path, capsys) -> None:
 
 
 def test_cli_llm_generate_deterministic(capsys) -> None:
-    exit_code = main(["llm-generate", "Hello", "--instructions", "Be concise."])
+    exit_code = main(["llm-generate", "Hello", "--instructions", "Be concise.", "--json"])
 
-    output = capsys.readouterr().out
+    output = json.loads(capsys.readouterr().out)
     assert exit_code == 0
-    assert "[deterministic-llm]" in output
-    assert "prompt=Hello" in output
+    assert output["provider"] == "deterministic"
+    assert output["model"] == "gpt-5.5-codex"
+    assert output["raw_response"]["reasoning_effort"] == "medium"
+    assert "[deterministic-llm]" in output["text"]
+    assert "prompt=Hello" in output["text"]
 
 
 def test_cli_llm_generate_real_provider_requires_opt_in(capsys, monkeypatch) -> None:

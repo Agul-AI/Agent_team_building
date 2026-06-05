@@ -41,9 +41,11 @@ Not implemented yet:
 
 ## Generate text with the LLM adapter layer
 
-The default model identifier is `gpt-5.3-codex`. The default provider still stays
-deterministic unless real LLM use is explicitly enabled. Override the model with
-`--model` or `TEAM_FACTORY_DEFAULT_LLM_MODEL`.
+The default model identifier is `gpt-5.5-codex` with `medium` reasoning effort.
+The default provider still stays deterministic unless real LLM use is explicitly
+enabled. Override the model/reasoning defaults with `--model`,
+`--reasoning-effort`, `TEAM_FACTORY_DEFAULT_LLM_MODEL`, or
+`TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT`.
 
 Deterministic default using the Codex model identifier:
 
@@ -61,7 +63,8 @@ export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --provider openai_responses \
-  --model gpt-5.3-codex \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
   --enable-real-llm
 ```
 

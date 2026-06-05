@@ -160,10 +160,12 @@ scripts/ci_regression.sh</code></pre>
     <section class="card">
       <h2>9. Generate text with the LLM adapter layer</h2>
       <p>
-        The factory now uses <code>gpt-5.3-codex</code> as the default model identifier.
-        The provider is still deterministic unless real LLM use is explicitly enabled.
-        Override the model with <code>--model</code> or
-        <code>TEAM_FACTORY_DEFAULT_LLM_MODEL</code>.
+        The factory now uses <code>gpt-5.5-codex</code> as the default model identifier
+        with <code>medium</code> reasoning effort. The provider is still deterministic
+        unless real LLM use is explicitly enabled. Override the model/reasoning defaults
+        with <code>--model</code>, <code>--reasoning-effort</code>,
+        <code>TEAM_FACTORY_DEFAULT_LLM_MODEL</code>, or
+        <code>TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT</code>.
       </p>
       <p>Deterministic adapter using the Codex model identifier, safe for CI and local regression:</p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
@@ -175,11 +177,14 @@ export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --provider openai_responses \
-  --model gpt-5.3-codex \
+  --model gpt-5.5-codex \
+  --reasoning-effort medium \
   --enable-real-llm</code></pre>
       <p>
         The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>, and
-        <code>parallel_tool_calls=false</code>. It is not wired into agent runtime orchestration yet.
+        <code>parallel_tool_calls=false</code>, with
+        <code>reasoning.effort="medium"</code> by default. It is not wired into agent
+        runtime orchestration yet.
       </p>
     </section>
 

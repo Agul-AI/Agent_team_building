@@ -8,6 +8,7 @@ import pytest
 
 from team_factory.llm import (
     DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_REASONING_EFFORT,
     DeterministicLLMAdapter,
     LLMAdapterConfig,
     LLMAdapterError,
@@ -63,7 +64,10 @@ def test_deterministic_llm_adapter_is_default_and_stable() -> None:
     assert response.provider == "deterministic"
     assert response.model == DEFAULT_LLM_MODEL
     assert "prompt=Hello" in response.text
-    assert response.raw_response == {"deterministic": True}
+    assert response.raw_response == {
+        "deterministic": True,
+        "reasoning_effort": DEFAULT_LLM_REASONING_EFFORT,
+    }
 
 
 def test_build_llm_adapter_returns_deterministic_adapter() -> None:
@@ -72,12 +76,24 @@ def test_build_llm_adapter_returns_deterministic_adapter() -> None:
     assert isinstance(adapter, DeterministicLLMAdapter)
 
 
-def test_default_llm_model_is_codex_and_env_overridable(monkeypatch) -> None:
+def test_default_llm_model_and_reasoning_effort_are_overridable(monkeypatch) -> None:
     monkeypatch.delenv("TEAM_FACTORY_DEFAULT_LLM_MODEL", raising=False)
+    monkeypatch.delenv("TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT", raising=False)
     assert LLMAdapterConfig().model == DEFAULT_LLM_MODEL
+    assert LLMAdapterConfig().reasoning_effort == DEFAULT_LLM_REASONING_EFFORT
 
+    monkeypatch.setenv("TEAM_FACTORY_DEFAULT_LLM_MODEL", "custom-model")
+    monkeypatch.setenv("TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT", "high")
+    assert LLMAdapterConfig().model == "custom-model"
+    assert LLMAdapterConfig().reasoning_effort == "high"
+
+
+def test_invalid_default_reasoning_effort_fails_validation(monkeypatch) -> None:
     monkeypatch.setenv("TEAM_FACTORY_DEFAULT_LLM_MODEL", "custom-codex")
-    assert LLMAdapterConfig().model == "custom-codex"
+    monkeypatch.setenv("TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT", "maximum")
+
+    with pytest.raises(ValueError, match="reasoning_effort"):
+        LLMAdapterConfig()
 
 
 def test_real_llm_config_requires_explicit_enable(monkeypatch) -> None:
@@ -121,6 +137,7 @@ def test_openai_adapter_payload_disables_tools(monkeypatch) -> None:
         enable_real_llm=True,
         max_output_tokens=42,
         temperature=0.1,
+        reasoning_effort="medium",
     )
     adapter = OpenAIResponsesLLMAdapter(config, opener=opener)
 
@@ -143,5 +160,6 @@ def test_openai_adapter_payload_disables_tools(monkeypatch) -> None:
         "parallel_tool_calls": False,
         "max_output_tokens": 42,
         "temperature": 0.1,
+        "reasoning": {"effort": "medium"},
     }
     assert request.headers["Authorization"] == "Bearer test-key"

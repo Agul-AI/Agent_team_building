@@ -47,7 +47,10 @@ class DeterministicLLMAdapter(LLMAdapter):
             provider=LLMProvider.DETERMINISTIC.value,
             model=self.config.model,
             text=text,
-            raw_response={"deterministic": True},
+            raw_response={
+                "deterministic": True,
+                "reasoning_effort": self.config.reasoning_effort,
+            },
             usage={"input_chars": len(request.prompt), "output_chars": len(text)},
         )
 
@@ -119,6 +122,8 @@ class OpenAIResponsesLLMAdapter(LLMAdapter):
             payload["max_output_tokens"] = self.config.max_output_tokens
         if self.config.temperature is not None:
             payload["temperature"] = self.config.temperature
+        if self.config.reasoning_effort is not None:
+            payload["reasoning"] = {"effort": self.config.reasoning_effort}
         return payload
 
 

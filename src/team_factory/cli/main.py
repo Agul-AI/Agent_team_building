@@ -24,6 +24,7 @@ from team_factory.llm import (
     LLMRequest,
     build_llm_adapter,
     default_llm_model,
+    default_llm_reasoning_effort,
 )
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
 from team_factory.observability import (
@@ -131,6 +132,15 @@ def build_parser() -> argparse.ArgumentParser:
     llm_parser.add_argument("--timeout-seconds", type=float, default=30.0)
     llm_parser.add_argument("--max-output-tokens", type=int, default=512)
     llm_parser.add_argument("--temperature", type=float, default=0.2)
+    llm_parser.add_argument(
+        "--reasoning-effort",
+        choices=["none", "minimal", "low", "medium", "high", "xhigh"],
+        default=default_llm_reasoning_effort(),
+        help=(
+            "Reasoning effort for real providers. Defaults to "
+            "TEAM_FACTORY_DEFAULT_LLM_REASONING_EFFORT or medium."
+        ),
+    )
     llm_parser.add_argument("--json", action="store_true", help="Emit JSON response.")
     llm_parser.set_defaults(func=_cmd_llm_generate)
 
@@ -452,6 +462,7 @@ def _cmd_llm_generate(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout_seconds,
         max_output_tokens=args.max_output_tokens,
         temperature=args.temperature,
+        reasoning_effort=args.reasoning_effort,
     )
     adapter = build_llm_adapter(config)
     response = adapter.generate(
