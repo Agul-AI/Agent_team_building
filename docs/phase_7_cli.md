@@ -32,6 +32,10 @@ team-factory --help
 | `memory-list` | List local memory records. |
 | `memory-delete` | Delete one local memory record. |
 | `eval` | Run deterministic mock evaluations and write Markdown reports. |
+| `trace-snapshot` | Run a mock workflow and write a deterministic trace snapshot. |
+| `trace-compare` | Compare two deterministic trace snapshots. |
+| `run-log-list` | List persisted replay-oriented run records. |
+| `run-log-get` | Retrieve one persisted replay-oriented run record. |
 
 ## Examples
 

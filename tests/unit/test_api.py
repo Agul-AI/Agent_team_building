@@ -35,6 +35,7 @@ def test_api_workflow_order_and_mock_run_are_observable(tmp_path) -> None:
             "workflow_id": "research_backtest_review",
         },
     )
+    run_log_path = tmp_path / "runs.jsonl"
     run = api.handle(
         "POST",
         "/runs/mock",
@@ -42,6 +43,7 @@ def test_api_workflow_order_and_mock_run_are_observable(tmp_path) -> None:
             "spec_path": "team_specs/travel_planning_team.yaml",
             "workflow_id": "plan_trip",
             "task": "Plan a short trip.",
+            "run_log_path": str(run_log_path),
         },
     )
     events = JsonlEventLogger(audit_path).read_events()
@@ -50,6 +52,9 @@ def test_api_workflow_order_and_mock_run_are_observable(tmp_path) -> None:
     assert order.body["agent_order"][0] == "strategy_ideator"
     assert run.status_code == 200
     assert run.body["run_result"]["team_id"] == "travel_planning_team"
+    assert run.body["trace_snapshot"]["digest"]
+    assert run.body["persisted_run_id"] == run.body["run_result"]["run_id"]
+    assert run_log_path.exists()
     assert any(event["event_type"] == "run" for event in events)
     assert any(event.get("action") == "POST /runs/mock" for event in events)
 

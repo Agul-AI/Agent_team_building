@@ -174,3 +174,91 @@ def test_cli_eval_writes_reports(tmp_path, capsys) -> None:
         "trading_strategy_research_team.md",
         "travel_planning_team.md",
     ]
+
+
+def test_cli_trace_snapshot_compare_and_run_log(tmp_path, capsys) -> None:
+    snapshot_a = tmp_path / "snapshot_a.json"
+    snapshot_b = tmp_path / "snapshot_b.json"
+    run_log = tmp_path / "runs.jsonl"
+
+    run_code = main(
+        [
+            "run-mock",
+            "team_specs/travel_planning_team.yaml",
+            "Plan a short trip.",
+            "--workflow-id",
+            "plan_trip",
+            "--run-log",
+            str(run_log),
+            "--snapshot-out",
+            str(snapshot_a),
+        ]
+    )
+    run_out = capsys.readouterr().out
+
+    snapshot_code = main(
+        [
+            "trace-snapshot",
+            "team_specs/travel_planning_team.yaml",
+            "Plan a short trip.",
+            "--workflow-id",
+            "plan_trip",
+            "--out",
+            str(snapshot_b),
+        ]
+    )
+    snapshot_out = capsys.readouterr().out
+
+    compare_code = main(["trace-compare", str(snapshot_a), str(snapshot_b)])
+    compare_out = capsys.readouterr().out
+
+    list_code = main(["run-log-list", "--run-log", str(run_log)])
+    list_out = capsys.readouterr().out
+    run_id = list_out.split()[0]
+
+    get_code = main(["run-log-get", "--run-log", str(run_log), "--run-id", run_id])
+    get_out = capsys.readouterr().out
+
+    assert run_code == snapshot_code == compare_code == list_code == get_code == 0
+    assert "persisted run" in run_out
+    assert snapshot_a.exists()
+    assert snapshot_b.exists()
+    assert "digest=" in snapshot_out
+    assert compare_out.startswith("MATCH")
+    assert "travel_planning_team" in list_out
+    assert "Mock run for team" in get_out
+
+
+def test_cli_trace_compare_detects_difference(tmp_path, capsys) -> None:
+    snapshot_a = tmp_path / "snapshot_a.json"
+    snapshot_b = tmp_path / "snapshot_b.json"
+    main(
+        [
+            "trace-snapshot",
+            "team_specs/travel_planning_team.yaml",
+            "Plan a short trip.",
+            "--workflow-id",
+            "plan_trip",
+            "--out",
+            str(snapshot_a),
+        ]
+    )
+    capsys.readouterr()
+    main(
+        [
+            "trace-snapshot",
+            "team_specs/travel_planning_team.yaml",
+            "Plan a long trip.",
+            "--workflow-id",
+            "plan_trip",
+            "--out",
+            str(snapshot_b),
+        ]
+    )
+    capsys.readouterr()
+
+    compare_code = main(["trace-compare", str(snapshot_a), str(snapshot_b)])
+    compare_out = capsys.readouterr().out
+
+    assert compare_code == 2
+    assert compare_out.startswith("DIFF")

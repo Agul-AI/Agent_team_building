@@ -17,7 +17,7 @@ Available local routes:
 | `GET` | `/health` | Health check. |
 | `POST` | `/specs/validate` | Validate a team spec. |
 | `POST` | `/workflows/order` | Return deterministic mock workflow order. |
-| `POST` | `/runs/mock` | Run a supported deterministic mock workflow. |
+| `POST` | `/runs/mock` | Run a supported deterministic mock workflow; Phase 9 can also return trace snapshots and persist a run log when `run_log_path` is provided. |
 | `POST` | `/tools/check` | Authorize a proposed tool call without executing it. |
 | `POST` | `/eval/mock` | Run deterministic mock evaluation and write a Markdown report. |
 

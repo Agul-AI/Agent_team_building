@@ -18,7 +18,12 @@ from uuid import uuid4
 from pydantic import BaseModel, ConfigDict
 
 from team_factory.evaluation import EvaluationHarness, write_markdown_report
-from team_factory.observability import AuditStatus, JsonlEventLogger
+from team_factory.observability import (
+    AuditStatus,
+    JsonlEventLogger,
+    JsonlRunStore,
+    build_trace_snapshot,
+)
 from team_factory.orchestration.compiler import compile_workflow, ordered_agent_ids_for_workflow
 from team_factory.specs.loader import load_team_spec
 from team_factory.specs.models import TeamSpec
@@ -149,9 +154,23 @@ class TeamFactoryAPI:
         result = workflow.run(task)
         if self._logger:
             self._logger.append_run_result(result, correlation_id=correlation_id)
+        trace_snapshot = build_trace_snapshot(result)
+        run_log_path = body.get("run_log_path")
+        persisted_run_id = None
+        if run_log_path:
+            record = JsonlRunStore(Path(str(run_log_path))).append(
+                result,
+                metadata={"source": "api.runs.mock", "spec_path": body.get("spec_path")},
+            )
+            persisted_run_id = record.run_id
         return LocalAPIResponse(
             status_code=200,
-            body={"ok": True, "run_result": result.model_dump(mode="json")},
+            body={
+                "ok": True,
+                "run_result": result.model_dump(mode="json"),
+                "trace_snapshot": trace_snapshot.model_dump(mode="json"),
+                "persisted_run_id": persisted_run_id,
+            },
         )
 
     def _tool_check(self, body: dict[str, Any]) -> LocalAPIResponse:

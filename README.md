@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phase 8**.
+Current completed scope: **Phase 0 through Phase 9 hardening**.
 
 Implemented now:
 
@@ -19,6 +19,7 @@ Implemented now:
 - Mock-compatible workflow support for sequential, critique-revision, and supervisor-worker teams.
 - Local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
 - Local API skeleton and structured JSONL audit/run observability.
+- Regression trace snapshots and replay-oriented JSONL run-log persistence.
 
 Not implemented yet:
 
@@ -109,6 +110,23 @@ The Phase 5 evaluation harness executes declared scenarios through supported moc
 
 The scientific, trading, and travel example teams now run through the mock evaluator. Debate, parallel-research, and custom workflows are still reported as skipped.
 
+
+
+## Capture and compare deterministic trace snapshots
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-snapshot \
+  team_specs/travel_planning_team.yaml \
+  "Plan a short trip." \
+  --workflow-id plan_trip \
+  --out examples/artifacts/travel_snapshot.json
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
+  team_specs/travel_planning_team.yaml \
+  "Plan a short trip." \
+  --workflow-id plan_trip \
+  --run-log examples/artifacts/runs.jsonl
+```
 
 ## Serve the local API skeleton
 

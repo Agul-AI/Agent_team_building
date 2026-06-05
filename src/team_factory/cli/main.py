@@ -18,6 +18,12 @@ from pydantic import ValidationError
 
 from team_factory.evaluation import EvaluationHarness, write_markdown_report
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
+from team_factory.observability import (
+    JsonlRunStore,
+    RunTraceSnapshot,
+    build_trace_snapshot,
+    compare_trace_snapshots,
+)
 from team_factory.orchestration.compiler import compile_workflow, ordered_agent_ids_for_workflow
 from team_factory.orchestration.runtime import WorkflowRunError
 from team_factory.specs.loader import TeamSpecLoadError, load_team_spec
@@ -62,6 +68,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Workflow id. Optional for single-workflow teams.",
     )
     run_parser.add_argument("--json", action="store_true", help="Emit full JSON RunResult.")
+    run_parser.add_argument("--run-log", help="Append full run plus trace snapshot to JSONL.")
+    run_parser.add_argument("--snapshot-out", help="Write deterministic trace snapshot JSON.")
     run_parser.set_defaults(func=_cmd_run_mock)
 
     tool_parser = subparsers.add_parser(
@@ -138,6 +146,40 @@ def build_parser() -> argparse.ArgumentParser:
     memory_delete_parser.add_argument("--key", required=True)
     memory_delete_parser.set_defaults(func=_cmd_memory_delete)
 
+
+    trace_parser = subparsers.add_parser(
+        "trace-snapshot",
+        help="Run a mock workflow and write a deterministic trace snapshot.",
+    )
+    trace_parser.add_argument("spec", help="Spec YAML file.")
+    trace_parser.add_argument("task", nargs="?", default="Run deterministic mock task.")
+    trace_parser.add_argument(
+        "--workflow-id",
+        help="Workflow id. Optional for single-workflow teams.",
+    )
+    trace_parser.add_argument("--out", required=True, help="Snapshot JSON output path.")
+    trace_parser.set_defaults(func=_cmd_trace_snapshot)
+
+    trace_compare_parser = subparsers.add_parser(
+        "trace-compare",
+        help="Compare two deterministic trace snapshots.",
+    )
+    trace_compare_parser.add_argument("expected", help="Expected snapshot JSON path.")
+    trace_compare_parser.add_argument("actual", help="Actual snapshot JSON path.")
+    trace_compare_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
+    trace_compare_parser.set_defaults(func=_cmd_trace_compare)
+
+    run_log_list_parser = subparsers.add_parser("run-log-list", help="List persisted run records.")
+    run_log_list_parser.add_argument("--run-log", required=True, help="Run-log JSONL path.")
+    run_log_list_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
+    run_log_list_parser.set_defaults(func=_cmd_run_log_list)
+
+    run_log_get_parser = subparsers.add_parser("run-log-get", help="Get a persisted run record.")
+    run_log_get_parser.add_argument("--run-log", required=True, help="Run-log JSONL path.")
+    run_log_get_parser.add_argument("--run-id", required=True, help="Run id to retrieve.")
+    run_log_get_parser.add_argument("--json", action="store_true", help="Emit full JSON record.")
+    run_log_get_parser.set_defaults(func=_cmd_run_log_get)
+
     eval_parser = subparsers.add_parser("eval", help="Run deterministic mock evaluations.")
     eval_parser.add_argument("specs", nargs="+", help="Spec YAML files to evaluate.")
     eval_parser.add_argument(
@@ -199,6 +241,18 @@ def _cmd_run_mock(args: argparse.Namespace) -> int:
     spec = load_team_spec(args.spec)
     workflow = compile_workflow(spec, args.workflow_id)
     result = workflow.run(args.task)
+    if args.run_log:
+        record = JsonlRunStore(args.run_log).append(
+            result,
+            metadata={"source": "cli.run-mock", "spec": args.spec},
+        )
+        if not args.json:
+            print(f"persisted run {record.run_id} to {args.run_log}")
+    if args.snapshot_out:
+        snapshot = build_trace_snapshot(result)
+        _write_snapshot(snapshot, args.snapshot_out)
+        if not args.json:
+            print(f"wrote trace snapshot {args.snapshot_out}")
     if args.json:
         print(result.model_dump_json(indent=2))
     else:
@@ -206,6 +260,61 @@ def _cmd_run_mock(args: argparse.Namespace) -> int:
         print("Agent outputs:")
         for output in result.agent_outputs:
             print(f"- {output.agent_id}: {output.summary}")
+    return 0
+
+
+def _cmd_trace_snapshot(args: argparse.Namespace) -> int:
+    spec = load_team_spec(args.spec)
+    workflow = compile_workflow(spec, args.workflow_id)
+    result = workflow.run(args.task)
+    snapshot = build_trace_snapshot(result)
+    _write_snapshot(snapshot, args.out)
+    print(f"wrote trace snapshot {args.out} digest={snapshot.digest}")
+    return 0
+
+
+def _cmd_trace_compare(args: argparse.Namespace) -> int:
+    expected = _read_snapshot(args.expected)
+    actual = _read_snapshot(args.actual)
+    comparison = compare_trace_snapshots(expected, actual)
+    if args.json:
+        print(comparison.model_dump_json(indent=2))
+    else:
+        status = "MATCH" if comparison.matches else "DIFF"
+        print(f"{status} expected={comparison.expected_digest} actual={comparison.actual_digest}")
+        for difference in comparison.differences:
+            print(f"- {difference}")
+    return 0 if comparison.matches else 2
+
+
+def _cmd_run_log_list(args: argparse.Namespace) -> int:
+    records = JsonlRunStore(args.run_log).list_records()
+    if args.json:
+        print(json.dumps([_run_log_summary(record) for record in records], indent=2))
+    else:
+        for record in records:
+            print(
+                f"{record.run_id} {record.run_result.team_id} "
+                f"{record.run_result.workflow_id} {record.run_result.status} "
+                f"digest={record.trace_snapshot.digest}"
+            )
+    return 0
+
+
+def _cmd_run_log_get(args: argparse.Namespace) -> int:
+    record = JsonlRunStore(args.run_log).get(args.run_id)
+    if record is None:
+        print(f"run id not found: {args.run_id}", file=sys.stderr)
+        return 2
+    if args.json:
+        print(record.model_dump_json(indent=2))
+    else:
+        print(
+            f"{record.run_id} {record.run_result.team_id} "
+            f"{record.run_result.workflow_id} {record.run_result.status} "
+            f"digest={record.trace_snapshot.digest}"
+        )
+        print(record.run_result.final_output)
     return 0
 
 
@@ -317,6 +426,28 @@ def _cmd_eval(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(summaries, indent=2, sort_keys=True))
     return exit_code
+
+
+def _write_snapshot(snapshot: RunTraceSnapshot, path: str | Path) -> Path:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(snapshot.model_dump_json(indent=2), encoding="utf-8")
+    return output_path
+
+
+def _read_snapshot(path: str | Path) -> RunTraceSnapshot:
+    return RunTraceSnapshot.model_validate_json(Path(path).read_text(encoding="utf-8"))
+
+
+def _run_log_summary(record) -> dict[str, Any]:
+    return {
+        "run_id": record.run_id,
+        "team_id": record.run_result.team_id,
+        "workflow_id": record.run_result.workflow_id,
+        "status": record.run_result.status,
+        "digest": record.trace_snapshot.digest,
+        "recorded_at": record.recorded_at.isoformat(),
+    }
 
 
 def _parse_json_object(raw: str, label: str) -> dict[str, Any]:

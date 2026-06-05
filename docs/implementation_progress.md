@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phase 8 are implemented locally. Phase 8 adds a local API skeleton and structured JSONL audit/run observability.
+Phase 0 through Phase 9 hardening are implemented locally. Phase 9 adds deterministic regression trace snapshots and replay-oriented JSONL run-log persistence.
 
 ## Completed
 
@@ -37,6 +37,10 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phas
 - Local API skeleton for health, spec validation, workflow order, mock runs, tool checks, and mock evals.
 - Structured JSONL audit and compact run observability events.
 - API/observability tests.
+- Deterministic trace snapshots with stable digests.
+- Trace comparison helpers.
+- Replay-oriented JSONL run-log persistence.
+- CLI support for trace snapshots, trace comparison, and run-log inspection.
 
 ## Not started
 
@@ -51,4 +55,4 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, and Phas
 
 ## Next recommended phase
 
-Harden the platform by adding regression trace snapshots and replay-oriented run-log persistence before introducing real LLM/tool execution.
+Add checked-in golden snapshots and an intentional approval/update workflow before introducing real LLM/tool execution.
