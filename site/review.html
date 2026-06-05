@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Team Factory GPT Review Summary</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="index.html">Plan &amp; Progress</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="review.html" aria-current="page">GPT Review Summary</a>
+    </nav>
+    <span class="badge">Agent Team Factory</span>
+    <h1>GPT Review Summary</h1>
+    <p class="lead">
+      Reviewer-facing overview of what has been implemented, what is intentionally
+      deferred, and which files deserve careful review. The canonical Markdown file is
+      <code>docs/gpt_review_summary.md</code> in the repository root.
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Implemented scope</h2>
+      <p>
+        The factory currently covers Phase 0 through Phase 12: docs, team specs,
+        validation, deterministic mock workflows, manifest-only tool authorization,
+        local memory, deterministic evaluations, CLI/API flows, observability, trace
+        snapshots, run logs, golden baselines, CI/release checks, and a strict opt-in
+        LLM adapter layer.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Safety posture</h2>
+        <ul>
+          <li>No autonomous tool execution exists.</li>
+          <li>Tool checks authorize or reject proposed calls only.</li>
+          <li>Real LLM calls are not default and are excluded from CI.</li>
+          <li>Golden snapshot updates require explicit <code>--approve</code>.</li>
+          <li>High-impact and critical tools require approval gates.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Not implemented yet</h2>
+        <ul>
+          <li>LLM-backed agent runtime orchestration.</li>
+          <li>LangGraph integration.</li>
+          <li>Real tool/function execution.</li>
+          <li>LLM judges, vector memory, streaming, and production deployment.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Review focus</h2>
+      <ol class="step-list">
+        <li>Confirm deterministic mocks remain the default.</li>
+        <li>Confirm real LLM usage requires both config and environment opt-in.</li>
+        <li>Confirm no code path executes external tools.</li>
+        <li>Confirm trace and golden snapshot behavior is stable.</li>
+        <li>Confirm docs and website tutorials match actual CLI commands.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Validation commands</h2>
+      <pre><code>~/.venvs/myenv/bin/python -m pytest
+~/.venvs/myenv/bin/python -m ruff check .
+scripts/ci_regression.sh
+scripts/release_check.sh</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    Canonical review file: <code>docs/gpt_review_summary.md</code>.
+  </footer>
+</body>
+</html>

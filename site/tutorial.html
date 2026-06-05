@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Team Factory Tutorial</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="index.html">Plan &amp; Progress</a>
+      <a href="tutorial.html" aria-current="page">Tutorial</a>
+      <a href="review.html">GPT Review Summary</a>
+    </nav>
+    <span class="badge">Agent Team Factory</span>
+    <h1>How to Use and Improve the Factory</h1>
+    <p class="lead">
+      This tutorial walks through local setup, deterministic workflows, permissions,
+      memory, evaluations, the opt-in LLM adapter, and safe ways to extend the factory.
+      The default path is deterministic and reviewable; real LLM calls are strictly opt-in.
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Quick start</h2>
+      <p>Run these commands from the repository root:</p>
+      <pre><code>cd /Users/cosdis/Desktop/AI_builder/AI_Team_building
+~/.venvs/myenv/bin/python -m pip install -e '.[dev]'
+~/.venvs/myenv/bin/python -m pytest
+scripts/ci_regression.sh</code></pre>
+      <p>
+        The regression script validates specs, checks golden snapshots, runs deterministic
+        mock evaluations, compares traces, exercises run logs, runs a deterministic LLM
+        adapter smoke test, and checks the local API dispatcher.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Repository tour</h2>
+      <div class="two-col">
+        <ul>
+          <li><code>team_specs/*.yaml</code> — user-authored team definitions.</li>
+          <li><code>src/team_factory/specs/</code> — Pydantic schema and YAML loader.</li>
+          <li><code>src/team_factory/orchestration/</code> — deterministic mock runtime.</li>
+          <li><code>src/team_factory/tools/</code> — permission checks, no execution.</li>
+          <li><code>src/team_factory/memory/</code> — SQLite local memory foundation.</li>
+        </ul>
+        <ul>
+          <li><code>src/team_factory/evaluation/</code> — deterministic scenario reports.</li>
+          <li><code>src/team_factory/observability/</code> — traces, run logs, audit logs.</li>
+          <li><code>src/team_factory/api/</code> — local API skeleton.</li>
+          <li><code>src/team_factory/llm/</code> — deterministic and opt-in LLM adapters.</li>
+          <li><code>tests/golden_snapshots/</code> — checked-in regression baselines.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>1. Validate team specs</h2>
+      <p>Start every change by validating the YAML specs.</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py validate team_specs/*.yaml</code></pre>
+      <p>
+        Validation catches malformed agent definitions, workflow references, safety policy
+        issues, and high-impact tool approval gaps before runtime code is involved.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>2. Inspect workflow order</h2>
+      <p>Use workflow order checks to understand which agents will run in mock mode.</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py workflow-order \
+  team_specs/travel_planning_team.yaml \
+  --workflow-id plan_trip</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>3. Run deterministic mock workflows</h2>
+      <p>Mock runs are the safest way to debug specs and orchestration shape.</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py run-mock \
+  team_specs/travel_planning_team.yaml \
+  "Plan a weekend city trip." \
+  --workflow-id plan_trip</code></pre>
+      <p>For machine-readable output, add <code>--json</code>.</p>
+    </section>
+
+    <section class="card">
+      <h2>4. Record and compare traces</h2>
+      <p>Trace snapshots make deterministic workflow drift visible.</p>
+      <pre><code>mkdir -p examples/artifacts/tutorial
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-snapshot \
+  team_specs/travel_planning_team.yaml \
+  "Plan a weekend city trip." \
+  --workflow-id plan_trip \
+  --out examples/artifacts/tutorial/travel_trace.json
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py trace-compare \
+  tests/golden_snapshots/travel_planning_team__plan_trip__weekend_city_trip.json \
+  examples/artifacts/tutorial/travel_trace.json</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>5. Use golden snapshots intentionally</h2>
+      <p>Check golden snapshots before merging runtime-affecting changes:</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-check team_specs/*.yaml</code></pre>
+      <p>
+        Only update baselines when the change is expected and reviewed. The update command
+        requires explicit approval:
+      </p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-update team_specs/*.yaml --approve</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>6. Run deterministic evaluations</h2>
+      <p>Generate scenario reports for the example teams:</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py eval \
+  team_specs/scientific_discovery_team.yaml \
+  team_specs/trading_strategy_research_team.yaml \
+  team_specs/travel_planning_team.yaml \
+  --out-dir examples/artifacts/evaluation_reports</code></pre>
+      <p>Reports are Markdown files under the selected output directory.</p>
+    </section>
+
+    <section class="card">
+      <h2>7. Check tool permissions without executing tools</h2>
+      <p>
+        The tool registry authorizes or rejects proposed calls. It does not execute them.
+      </p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py tool-check \
+  team_specs/trading_strategy_research_team.yaml \
+  --agent-id risk_reviewer \
+  --tool-id backtest_engine \
+  --purpose "Review strategy risk" \
+  --permission read_market_data</code></pre>
+      <p>
+        If a tool is high-impact or critical, specs and authorization flows must require
+        human approval before future execution support is considered.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>8. Manage local memory</h2>
+      <p>The memory store is currently standalone and useful for testing retention/redaction.</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py memory-put \
+  --db examples/artifacts/tutorial/memory.sqlite3 \
+  --category project \
+  --key tutorial_note \
+  --value-json '{"note":"remember this local preference"}'
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py memory-list \
+  --db examples/artifacts/tutorial/memory.sqlite3
+
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py memory-get \
+  --db examples/artifacts/tutorial/memory.sqlite3 \
+  --category project \
+  --key tutorial_note</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>9. Generate text with the LLM adapter layer</h2>
+      <p>Deterministic adapter, safe for CI and local regression:</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --instructions "Be concise."</code></pre>
+      <p>Real OpenAI Responses adapter, strict opt-in and still no tools:</p>
+      <pre><code>export TEAM_FACTORY_ENABLE_REAL_LLM=1
+export OPENAI_API_KEY=...
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
+  "Summarize the platform in one sentence." \
+  --provider openai_responses \
+  --model gpt-5 \
+  --enable-real-llm</code></pre>
+      <p>
+        The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>, and
+        <code>parallel_tool_calls=false</code>. It is not wired into agent runtime orchestration yet.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>10. Try the local API skeleton</h2>
+      <p>Start the local API server:</p>
+      <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_api.py --host 127.0.0.1 --port 8765</code></pre>
+      <p>In another terminal:</p>
+      <pre><code>curl http://127.0.0.1:8765/health
+
+curl -X POST http://127.0.0.1:8765/specs/validate \
+  -H 'Content-Type: application/json' \
+  -d '{"spec_path":"team_specs/travel_planning_team.yaml"}'</code></pre>
+      <p>The API is a local development skeleton and should not be exposed as production service.</p>
+    </section>
+
+    <section class="card">
+      <h2>How to improve the factory safely</h2>
+      <ol class="step-list">
+        <li>
+          <strong>Add or edit a team spec first.</strong>
+          Define agents, workflows, tools, safety policy, and evaluation scenarios in YAML.
+        </li>
+        <li>
+          <strong>Validate before runtime changes.</strong>
+          Run spec validation and workflow-order checks after every spec edit.
+        </li>
+        <li>
+          <strong>Keep deterministic mocks current.</strong>
+          Add or update tests before introducing nondeterministic behavior.
+        </li>
+        <li>
+          <strong>Use golden snapshots intentionally.</strong>
+          Check snapshots by default; update them only with <code>--approve</code> after review.
+        </li>
+        <li>
+          <strong>Do not add tool execution casually.</strong>
+          Any real tool execution phase should include approvals, audit logs, risk levels,
+          and narrow allowlists.
+        </li>
+        <li>
+          <strong>Keep real LLM usage opt-in.</strong>
+          New real-provider paths should retain deterministic fallbacks and stay out of CI by default.
+        </li>
+        <li>
+          <strong>Document each phase.</strong>
+          Add a focused <code>docs/phase_*.md</code> file and update the progress dashboard.
+        </li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Recommended next build</h2>
+      <p>
+        Add a guarded LLM-backed single-agent smoke workflow that is excluded from CI by
+        default, cannot call tools, logs safe metadata, and preserves deterministic mocks as
+        the default path.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Local static tutorial. Return to <a href="index.html">Plan &amp; Progress</a>.
+  </footer>
+</body>
+</html>

@@ -8,6 +8,11 @@
 </head>
 <body>
   <header>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="index.html" aria-current="page">Plan &amp; Progress</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="review.html">GPT Review Summary</a>
+    </nav>
     <span class="badge">Agent Team Factory</span>
     <h1>Plan & Implementation Progress</h1>
     <p class="lead">
@@ -50,10 +55,21 @@
       </article>
 
       <article class="card">
+        <h2>New tutorial</h2>
+        <p>
+          A practical local tutorial now walks through setup, validation, mock runs,
+          traces, golden snapshots, evaluations, permissions, memory, the LLM adapter,
+          the API skeleton, and safe extension practices.
+        </p>
+        <p><a class="button-link" href="tutorial.html">Open the tutorial</a></p>
+      </article>
+
+      <article class="card">
         <h2>Local files</h2>
         <ul>
           <li><code>docs/implementation_plan.md</code></li>
           <li><code>docs/implementation_progress.md</code></li>
+          <li><code>docs/gpt_review_summary.md</code></li>
           <li><code>team_specs/*.yaml</code></li>
           <li><code>src/team_factory/specs/</code></li>
           <li><code>tests/unit/test_spec_validation.py</code></li>
@@ -117,7 +133,9 @@
       <h2>Validation commands</h2>
       <p>From the repository root:</p>
       <p><code>~/.venvs/myenv/bin/python -m pytest</code></p>
+      <p><code>~/.venvs/myenv/bin/python -m ruff check .</code></p>
       <p><code>~/.venvs/myenv/bin/python scripts/validate_specs.py team_specs/*.yaml</code></p>
+      <p><code>scripts/ci_regression.sh</code></p>
     </section>
   </main>
 
