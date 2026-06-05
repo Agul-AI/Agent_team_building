@@ -6,7 +6,7 @@ scenario execution and Markdown reports.
 ## Current implementation
 
 - Reads scenarios and metrics from `TeamSpec.evaluation`.
-- Runs scenarios through supported deterministic mock workflows.
+- Runs scenarios through supported deterministic mock workflows: sequential, critique-revision, and supervisor-worker.
 - Performs structural checks only:
   - run completed
   - final output present

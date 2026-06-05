@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 are implemented locally. Phase 5 adds a deterministic evaluation harness and Markdown scenario reports.
+Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6 are implemented locally. Phase 6 adds mock-compatible support for critique-revision and supervisor-worker workflows.
 
 ## Completed
 
@@ -28,6 +28,9 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 are implemented locally
 - Deterministic evaluation harness for declared scenarios.
 - Markdown evaluation report generation.
 - Unit tests for executable, skipped, empty, and unknown-workflow evaluation reports.
+- Mock-compatible execution for critique-revision workflows.
+- Mock-compatible execution for supervisor-worker workflows.
+- All three example team evaluations now pass structurally in deterministic mock mode.
 
 ## Not started
 
@@ -42,4 +45,4 @@ Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 are implemented locally
 
 ## Next recommended phase
 
-Phase 6: make example teams more runnable by adding sequential mock-compatible variants or expanding mock runtime support for critique-revision and supervisor-worker workflows.
+Phase 7: implement CLI flows for validating specs, inspecting workflow order, running mock workflows, checking tool permissions, managing local memory, and running mock evaluations.

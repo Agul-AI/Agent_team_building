@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Phase 6**.
 
 Implemented now:
 
@@ -16,11 +16,12 @@ Implemented now:
 - Manifest-only tool registry and permission decisions.
 - Local SQLite memory foundation with retention and redaction.
 - Deterministic evaluation harness and Markdown scenario reports.
+- Mock-compatible workflow support for sequential, critique-revision, and supervisor-worker teams.
 
 Not implemented yet:
 
 - Real LLM orchestration.
-- Non-sequential workflow runtime semantics.
+- Debate, parallel-research, and custom workflow runtime semantics.
 - Tool execution.
   - Phase 3 can authorize proposed calls but intentionally does not execute them.
 - Runtime memory integration.
@@ -38,7 +39,7 @@ Not implemented yet:
 
 ## Run a deterministic mock workflow
 
-The Phase 2 runtime supports sequential workflows only.
+The deterministic mock runtime supports sequential, critique-revision, and supervisor-worker workflows.
 
 ```python
 from team_factory.specs.loader import load_team_spec
@@ -93,7 +94,7 @@ The Phase 5 evaluation harness executes declared scenarios through supported moc
 ~/.venvs/myenv/bin/python scripts/run_mock_evals.py team_specs/*.yaml
 ```
 
-Sequential workflows can run through the mock orchestrator. Unsupported workflow types are reported as skipped.
+The scientific, trading, and travel example teams now run through the mock evaluator. Debate, parallel-research, and custom workflows are still reported as skipped.
 
 ## View the local website
 

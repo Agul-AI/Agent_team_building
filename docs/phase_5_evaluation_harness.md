@@ -64,9 +64,8 @@ write_markdown_report(report, "examples/artifacts/evaluation_reports/travel.md")
 ~/.venvs/myenv/bin/python scripts/run_mock_evals.py team_specs/*.yaml
 ```
 
-The scientific and trading examples currently skip because their workflows are
-not sequential. The travel example runs through the Phase 2 deterministic mock
-orchestrator.
+After Phase 6, the scientific, trading, and travel examples all run through
+the deterministic mock orchestrator and pass structural checks.
 
 ## Future Phase 5+ extensions
 

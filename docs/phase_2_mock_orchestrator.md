@@ -1,6 +1,6 @@
 # Phase 2: Deterministic Mock Orchestrator
 
-Phase 2 adds a minimal, inspectable runtime for sequential workflows only.
+Phase 2 added a minimal, inspectable runtime for sequential workflows. Phase 6 later extended the same deterministic mock runtime to critique-revision and supervisor-worker workflows.
 
 ## Scope
 
@@ -8,6 +8,7 @@ Implemented:
 
 - Compile a validated `TeamSpec` plus workflow id into a `CompiledWorkflow`.
 - Support deterministic mock execution for `sequential` workflows.
+- Phase 6 extension: support deterministic mock execution for `critique_and_revision` and `supervisor_worker` workflows.
 - Emit structured run events:
   - `run_started`
   - `agent_started`
@@ -25,7 +26,8 @@ Not implemented:
 - Memory persistence.
 - Human approval runtime.
 - Evaluation harness execution.
-- Parallel, debate, supervisor-worker, or critique-revision runtime semantics.
+- Parallel, debate, or custom runtime semantics.
+- Real critique/revision loops or true supervisor-worker dispatch.
 
 ## Why deterministic first?
 

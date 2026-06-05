@@ -1,31 +1,36 @@
-"""Compile validated team specs into Phase 2 mock workflows."""
+"""Compile validated team specs into deterministic mock workflows."""
 
 from __future__ import annotations
 
 from team_factory.orchestration.runtime import CompiledWorkflow, WorkflowRunError
-from team_factory.specs.models import TeamSpec, WorkflowSpec, WorkflowType
+from team_factory.specs.models import AgentSpec, TeamSpec, WorkflowSpec, WorkflowType
 
-SUPPORTED_PHASE2_WORKFLOWS = {WorkflowType.SEQUENTIAL}
+SUPPORTED_MOCK_WORKFLOWS = {
+    WorkflowType.SEQUENTIAL,
+    WorkflowType.CRITIQUE_AND_REVISION,
+    WorkflowType.SUPERVISOR_WORKER,
+}
 
 
 def compile_workflow(team: TeamSpec, workflow_id: str | None = None) -> CompiledWorkflow:
     """Compile one workflow from a validated team spec.
 
-    Phase 2 supports deterministic mock execution for sequential workflows only.
-    Other workflow types are validated at the spec layer but intentionally rejected
-    by this compiler until their runtime semantics are implemented.
+    The mock compiler supports deterministic execution for sequential,
+    critique-and-revision, and supervisor-worker workflows. It still does not
+    perform real LLM calls, tool calls, parallelism, or iterative improvement.
     """
 
     workflow = _select_workflow(team, workflow_id)
-    if workflow.type not in SUPPORTED_PHASE2_WORKFLOWS:
+    if workflow.type not in SUPPORTED_MOCK_WORKFLOWS:
         msg = (
-            f"workflow '{workflow.id}' has type '{workflow.type.value}', but Phase 2 only "
-            "supports deterministic mock execution for sequential workflows"
+            f"workflow '{workflow.id}' has type '{workflow.type.value}', but the deterministic "
+            "mock runtime supports only sequential, critique_and_revision, and "
+            "supervisor_worker workflows"
         )
         raise WorkflowRunError(msg)
 
     agent_map = {agent.id: agent for agent in team.agents}
-    ordered_agents = tuple(agent_map[agent_id] for agent_id in workflow.steps)
+    ordered_agents = _ordered_agents(workflow, agent_map)
     return CompiledWorkflow(
         team=team,
         workflow=workflow,
@@ -49,7 +54,26 @@ def _select_workflow(team: TeamSpec, workflow_id: str | None) -> WorkflowSpec:
     raise WorkflowRunError(msg)
 
 
+def _ordered_agents(
+    workflow: WorkflowSpec,
+    agent_map: dict[str, AgentSpec],
+) -> tuple[AgentSpec, ...]:
+    if workflow.type in {WorkflowType.SEQUENTIAL, WorkflowType.CRITIQUE_AND_REVISION}:
+        agent_ids = workflow.steps
+    elif workflow.type == WorkflowType.SUPERVISOR_WORKER:
+        agent_ids = []
+        if workflow.supervisor:
+            agent_ids.append(workflow.supervisor)
+        agent_ids.extend(workflow.workers)
+        if workflow.final:
+            agent_ids.append(workflow.final)
+    else:  # pragma: no cover - guarded by compile_workflow before this helper runs
+        raise WorkflowRunError(f"unsupported workflow type '{workflow.type.value}'")
+
+    return tuple(agent_map[agent_id] for agent_id in agent_ids)
+
+
 def ordered_agent_ids_for_workflow(team: TeamSpec, workflow_id: str | None = None) -> list[str]:
-    """Return the Phase 2 execution order for a sequential workflow."""
+    """Return the deterministic mock execution order for a supported workflow."""
 
     return [agent.id for agent in compile_workflow(team, workflow_id).ordered_agents]

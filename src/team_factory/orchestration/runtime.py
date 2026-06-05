@@ -1,6 +1,6 @@
-"""Deterministic Phase 2 mock workflow runtime.
+"""Deterministic mock workflow runtime.
 
-The runtime executes declared agent order using static, deterministic mock agent
+The runtime executes compiled agent order using static, deterministic mock agent
 outputs. It is useful for testing spec compilation, event logging shape, and
 basic workflow boundaries before any real LLM/tool orchestration exists.
 """
@@ -19,7 +19,7 @@ from team_factory.specs.models import AgentSpec, TeamSpec, WorkflowSpec, Workflo
 
 
 class WorkflowRunError(RuntimeError):
-    """Raised when a workflow cannot be run by the Phase 2 mock runtime."""
+    """Raised when a workflow cannot be run by the deterministic mock runtime."""
 
 
 class AgentOutput(BaseModel):
@@ -78,7 +78,8 @@ class MockAgentRuntime:
 
     No LLMs, tools, files, networks, or databases are called. Each agent receives
     the original run input and the ids of prior agents, then emits a predictable
-    summary. This makes tests stable and keeps Phase 2 narrowly scoped.
+    summary. This keeps tests stable while allowing multiple workflow families to
+    be simulated in a bounded, inspectable way.
     """
 
     emit_events: bool = True
@@ -100,6 +101,7 @@ class MockAgentRuntime:
                 "team_version": workflow.team.team_version,
                 "workflow_type": workflow.workflow.type.value,
                 "agent_count": len(workflow.ordered_agents),
+                "execution_order": [agent.id for agent in workflow.ordered_agents],
             },
         )
 
