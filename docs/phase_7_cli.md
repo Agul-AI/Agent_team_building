@@ -36,6 +36,8 @@ team-factory --help
 | `trace-compare` | Compare two deterministic trace snapshots. |
 | `run-log-list` | List persisted replay-oriented run records. |
 | `run-log-get` | Retrieve one persisted replay-oriented run record. |
+| `golden-check` | Compare current deterministic traces against checked-in goldens. |
+| `golden-update` | Update goldens only with explicit `--approve`. |
 
 ## Examples
 

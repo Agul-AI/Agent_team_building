@@ -1,0 +1,188 @@
+{
+  "agent_order": [
+    "literature_reviewer",
+    "hypothesis_generator",
+    "experiment_designer",
+    "scientific_critic",
+    "final_synthesizer"
+  ],
+  "agent_steps": [
+    {
+      "agent_id": "literature_reviewer",
+      "goal": "Find and summarize relevant scientific literature.",
+      "prior_agent_outputs": [],
+      "role": "researcher",
+      "summary": "literature_reviewer (researcher) mock-processed task 'Survey recent approaches to automated materials discovery.' after 0 prior step(s)."
+    },
+    {
+      "agent_id": "hypothesis_generator",
+      "goal": "Generate plausible, testable hypotheses from the literature review.",
+      "prior_agent_outputs": [
+        "literature_reviewer"
+      ],
+      "role": "scientific_hypothesis_generator",
+      "summary": "hypothesis_generator (scientific_hypothesis_generator) mock-processed task 'Survey recent approaches to automated materials discovery.' after 1 prior step(s)."
+    },
+    {
+      "agent_id": "experiment_designer",
+      "goal": "Design feasible experiments or simulations to test hypotheses.",
+      "prior_agent_outputs": [
+        "literature_reviewer",
+        "hypothesis_generator"
+      ],
+      "role": "executor",
+      "summary": "experiment_designer (executor) mock-processed task 'Survey recent approaches to automated materials discovery.' after 2 prior step(s)."
+    },
+    {
+      "agent_id": "scientific_critic",
+      "goal": "Identify unsupported claims, weak assumptions, missing controls, and reproducibility issues.",
+      "prior_agent_outputs": [
+        "literature_reviewer",
+        "hypothesis_generator",
+        "experiment_designer"
+      ],
+      "role": "critic",
+      "summary": "scientific_critic (critic) mock-processed task 'Survey recent approaches to automated materials discovery.' after 3 prior step(s)."
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "goal": "Produce a clear, cited research brief with uncertainty and next-step recommendations.",
+      "prior_agent_outputs": [
+        "literature_reviewer",
+        "hypothesis_generator",
+        "experiment_designer",
+        "scientific_critic"
+      ],
+      "role": "final_synthesizer",
+      "summary": "final_synthesizer (final_synthesizer) mock-processed task 'Survey recent approaches to automated materials discovery.' after 4 prior step(s)."
+    }
+  ],
+  "digest": "e41b6eadffbea71e31df26c18e1573b6cb520513f765e3176d17a9e48438fede",
+  "event_sequence": [
+    {
+      "agent_id": null,
+      "data": {
+        "agent_count": 5,
+        "execution_order": [
+          "literature_reviewer",
+          "hypothesis_generator",
+          "experiment_designer",
+          "scientific_critic",
+          "final_synthesizer"
+        ],
+        "team_id": "scientific_discovery_team",
+        "team_version": "0.1.0",
+        "workflow_type": "critique_and_revision"
+      },
+      "message": "Mock workflow run started.",
+      "type": "run_started"
+    },
+    {
+      "agent_id": "literature_reviewer",
+      "data": {
+        "role": "researcher",
+        "step_index": 1
+      },
+      "message": "Mock agent 'literature_reviewer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "literature_reviewer",
+      "data": {
+        "step_index": 1,
+        "summary": "literature_reviewer (researcher) mock-processed task 'Survey recent approaches to automated materials discovery.' after 0 prior step(s)."
+      },
+      "message": "Mock agent 'literature_reviewer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "hypothesis_generator",
+      "data": {
+        "role": "scientific_hypothesis_generator",
+        "step_index": 2
+      },
+      "message": "Mock agent 'hypothesis_generator' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "hypothesis_generator",
+      "data": {
+        "step_index": 2,
+        "summary": "hypothesis_generator (scientific_hypothesis_generator) mock-processed task 'Survey recent approaches to automated materials discovery.' after 1 prior step(s)."
+      },
+      "message": "Mock agent 'hypothesis_generator' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "experiment_designer",
+      "data": {
+        "role": "executor",
+        "step_index": 3
+      },
+      "message": "Mock agent 'experiment_designer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "experiment_designer",
+      "data": {
+        "step_index": 3,
+        "summary": "experiment_designer (executor) mock-processed task 'Survey recent approaches to automated materials discovery.' after 2 prior step(s)."
+      },
+      "message": "Mock agent 'experiment_designer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "scientific_critic",
+      "data": {
+        "role": "critic",
+        "step_index": 4
+      },
+      "message": "Mock agent 'scientific_critic' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "scientific_critic",
+      "data": {
+        "step_index": 4,
+        "summary": "scientific_critic (critic) mock-processed task 'Survey recent approaches to automated materials discovery.' after 3 prior step(s)."
+      },
+      "message": "Mock agent 'scientific_critic' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "data": {
+        "role": "final_synthesizer",
+        "step_index": 5
+      },
+      "message": "Mock agent 'final_synthesizer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "data": {
+        "step_index": 5,
+        "summary": "final_synthesizer (final_synthesizer) mock-processed task 'Survey recent approaches to automated materials discovery.' after 4 prior step(s)."
+      },
+      "message": "Mock agent 'final_synthesizer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": null,
+      "data": {
+        "final_output": "Mock run for team 'scientific_discovery_team' workflow 'main' completed with final agent 'final_synthesizer'."
+      },
+      "message": "Mock workflow run completed.",
+      "type": "run_completed"
+    }
+  ],
+  "final_output": "Mock run for team 'scientific_discovery_team' workflow 'main' completed with final agent 'final_synthesizer'.",
+  "input": {
+    "task": "Survey recent approaches to automated materials discovery."
+  },
+  "schema_version": "0.1",
+  "status": "completed",
+  "team_id": "scientific_discovery_team",
+  "team_version": "0.1.0",
+  "workflow_id": "main"
+}

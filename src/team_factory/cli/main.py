@@ -19,10 +19,14 @@ from pydantic import ValidationError
 from team_factory.evaluation import EvaluationHarness, write_markdown_report
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
 from team_factory.observability import (
+    DEFAULT_GOLDEN_SNAPSHOT_DIR,
+    GoldenSnapshotResult,
     JsonlRunStore,
     RunTraceSnapshot,
     build_trace_snapshot,
+    check_golden_snapshots,
     compare_trace_snapshots,
+    update_golden_snapshots,
 )
 from team_factory.orchestration.compiler import compile_workflow, ordered_agent_ids_for_workflow
 from team_factory.orchestration.runtime import WorkflowRunError
@@ -169,6 +173,38 @@ def build_parser() -> argparse.ArgumentParser:
     trace_compare_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
     trace_compare_parser.set_defaults(func=_cmd_trace_compare)
 
+
+    golden_check_parser = subparsers.add_parser(
+        "golden-check",
+        help="Compare current mock traces against checked-in golden snapshots.",
+    )
+    golden_check_parser.add_argument("specs", nargs="+", help="Spec YAML files to check.")
+    golden_check_parser.add_argument(
+        "--snapshot-dir",
+        default=str(DEFAULT_GOLDEN_SNAPSHOT_DIR),
+        help="Golden snapshot directory.",
+    )
+    golden_check_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
+    golden_check_parser.set_defaults(func=_cmd_golden_check)
+
+    golden_update_parser = subparsers.add_parser(
+        "golden-update",
+        help="Update checked-in golden snapshots with explicit approval.",
+    )
+    golden_update_parser.add_argument("specs", nargs="+", help="Spec YAML files to update.")
+    golden_update_parser.add_argument(
+        "--snapshot-dir",
+        default=str(DEFAULT_GOLDEN_SNAPSHOT_DIR),
+        help="Golden snapshot directory.",
+    )
+    golden_update_parser.add_argument(
+        "--approve",
+        action="store_true",
+        help="Required explicit approval to write/update golden snapshots.",
+    )
+    golden_update_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
+    golden_update_parser.set_defaults(func=_cmd_golden_update)
+
     run_log_list_parser = subparsers.add_parser("run-log-list", help="List persisted run records.")
     run_log_list_parser.add_argument("--run-log", required=True, help="Run-log JSONL path.")
     run_log_list_parser.add_argument("--json", action="store_true", help="Emit JSON output.")
@@ -285,6 +321,24 @@ def _cmd_trace_compare(args: argparse.Namespace) -> int:
         for difference in comparison.differences:
             print(f"- {difference}")
     return 0 if comparison.matches else 2
+
+
+def _cmd_golden_check(args: argparse.Namespace) -> int:
+    results: list[GoldenSnapshotResult] = []
+    for spec_path in args.specs:
+        spec = load_team_spec(spec_path)
+        results.extend(check_golden_snapshots(spec, snapshot_dir=args.snapshot_dir))
+    return _print_golden_results(results, emit_json=args.json)
+
+
+def _cmd_golden_update(args: argparse.Namespace) -> int:
+    if not args.approve:
+        raise ValueError("golden-update requires --approve to intentionally update snapshots")
+    results: list[GoldenSnapshotResult] = []
+    for spec_path in args.specs:
+        spec = load_team_spec(spec_path)
+        results.extend(update_golden_snapshots(spec, snapshot_dir=args.snapshot_dir))
+    return _print_golden_results(results, emit_json=args.json)
 
 
 def _cmd_run_log_list(args: argparse.Namespace) -> int:
@@ -426,6 +480,24 @@ def _cmd_eval(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(summaries, indent=2, sort_keys=True))
     return exit_code
+
+
+def _print_golden_results(results: list[GoldenSnapshotResult], *, emit_json: bool) -> int:
+    if emit_json:
+        print(json.dumps([result.model_dump(mode="json") for result in results], indent=2))
+    else:
+        for result in results:
+            digest = result.actual_digest or result.expected_digest or "no-digest"
+            print(
+                f"{result.status.value.upper():7} {result.team_id} "
+                f"{result.workflow_id}/{result.scenario_id} digest={digest} "
+                f"path={result.snapshot_path}"
+            )
+            if result.error:
+                print(f"  error: {result.error}")
+            for difference in result.differences[:5]:
+                print(f"  - {difference}")
+    return 0 if all(result.ok for result in results) else 2
 
 
 def _write_snapshot(snapshot: RunTraceSnapshot, path: str | Path) -> Path:

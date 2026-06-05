@@ -1,0 +1,188 @@
+{
+  "agent_order": [
+    "preference_gatherer",
+    "destination_researcher",
+    "budget_optimizer",
+    "feasibility_critic",
+    "itinerary_synthesizer"
+  ],
+  "agent_steps": [
+    {
+      "agent_id": "preference_gatherer",
+      "goal": "Clarify preferences, constraints, dates, budget, and must-haves.",
+      "prior_agent_outputs": [],
+      "role": "planner",
+      "summary": "preference_gatherer (planner) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 0 prior step(s)."
+    },
+    {
+      "agent_id": "destination_researcher",
+      "goal": "Research destinations, attractions, transit, lodging options, and constraints.",
+      "prior_agent_outputs": [
+        "preference_gatherer"
+      ],
+      "role": "researcher",
+      "summary": "destination_researcher (researcher) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 1 prior step(s)."
+    },
+    {
+      "agent_id": "budget_optimizer",
+      "goal": "Optimize itinerary candidates against budget and preference constraints.",
+      "prior_agent_outputs": [
+        "preference_gatherer",
+        "destination_researcher"
+      ],
+      "role": "travel_budget_optimizer",
+      "summary": "budget_optimizer (travel_budget_optimizer) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 2 prior step(s)."
+    },
+    {
+      "agent_id": "feasibility_critic",
+      "goal": "Check travel times, fatigue, schedule feasibility, and booking reliability.",
+      "prior_agent_outputs": [
+        "preference_gatherer",
+        "destination_researcher",
+        "budget_optimizer"
+      ],
+      "role": "critic",
+      "summary": "feasibility_critic (critic) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 3 prior step(s)."
+    },
+    {
+      "agent_id": "itinerary_synthesizer",
+      "goal": "Produce a final itinerary with alternatives, caveats, and approval checkpoints.",
+      "prior_agent_outputs": [
+        "preference_gatherer",
+        "destination_researcher",
+        "budget_optimizer",
+        "feasibility_critic"
+      ],
+      "role": "final_synthesizer",
+      "summary": "itinerary_synthesizer (final_synthesizer) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 4 prior step(s)."
+    }
+  ],
+  "digest": "91a6b607b594534a9a83acc3d01f5472a3c1775071bf2021148a84d1377a5434",
+  "event_sequence": [
+    {
+      "agent_id": null,
+      "data": {
+        "agent_count": 5,
+        "execution_order": [
+          "preference_gatherer",
+          "destination_researcher",
+          "budget_optimizer",
+          "feasibility_critic",
+          "itinerary_synthesizer"
+        ],
+        "team_id": "travel_planning_team",
+        "team_version": "0.1.0",
+        "workflow_type": "sequential"
+      },
+      "message": "Mock workflow run started.",
+      "type": "run_started"
+    },
+    {
+      "agent_id": "preference_gatherer",
+      "data": {
+        "role": "planner",
+        "step_index": 1
+      },
+      "message": "Mock agent 'preference_gatherer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "preference_gatherer",
+      "data": {
+        "step_index": 1,
+        "summary": "preference_gatherer (planner) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 0 prior step(s)."
+      },
+      "message": "Mock agent 'preference_gatherer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "destination_researcher",
+      "data": {
+        "role": "researcher",
+        "step_index": 2
+      },
+      "message": "Mock agent 'destination_researcher' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "destination_researcher",
+      "data": {
+        "step_index": 2,
+        "summary": "destination_researcher (researcher) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 1 prior step(s)."
+      },
+      "message": "Mock agent 'destination_researcher' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "budget_optimizer",
+      "data": {
+        "role": "travel_budget_optimizer",
+        "step_index": 3
+      },
+      "message": "Mock agent 'budget_optimizer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "budget_optimizer",
+      "data": {
+        "step_index": 3,
+        "summary": "budget_optimizer (travel_budget_optimizer) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 2 prior step(s)."
+      },
+      "message": "Mock agent 'budget_optimizer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "feasibility_critic",
+      "data": {
+        "role": "critic",
+        "step_index": 4
+      },
+      "message": "Mock agent 'feasibility_critic' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "feasibility_critic",
+      "data": {
+        "step_index": 4,
+        "summary": "feasibility_critic (critic) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 3 prior step(s)."
+      },
+      "message": "Mock agent 'feasibility_critic' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "itinerary_synthesizer",
+      "data": {
+        "role": "final_synthesizer",
+        "step_index": 5
+      },
+      "message": "Mock agent 'itinerary_synthesizer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "itinerary_synthesizer",
+      "data": {
+        "step_index": 5,
+        "summary": "itinerary_synthesizer (final_synthesizer) mock-processed task 'Plan a three-day budget-conscious city trip with food, museums, and low fatigue.' after 4 prior step(s)."
+      },
+      "message": "Mock agent 'itinerary_synthesizer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": null,
+      "data": {
+        "final_output": "Mock run for team 'travel_planning_team' workflow 'plan_trip' completed with final agent 'itinerary_synthesizer'."
+      },
+      "message": "Mock workflow run completed.",
+      "type": "run_completed"
+    }
+  ],
+  "final_output": "Mock run for team 'travel_planning_team' workflow 'plan_trip' completed with final agent 'itinerary_synthesizer'.",
+  "input": {
+    "task": "Plan a three-day budget-conscious city trip with food, museums, and low fatigue."
+  },
+  "schema_version": "0.1",
+  "status": "completed",
+  "team_id": "travel_planning_team",
+  "team_version": "0.1.0",
+  "workflow_id": "plan_trip"
+}

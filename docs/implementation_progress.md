@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 9 hardening are implemented locally. Phase 9 adds deterministic regression trace snapshots and replay-oriented JSONL run-log persistence.
+Phase 0 through Phase 10 golden snapshot hardening are implemented locally. Phase 10 adds checked-in golden snapshots and an explicit approval/update workflow.
 
 ## Completed
 
@@ -41,6 +41,8 @@ Phase 0 through Phase 9 hardening are implemented locally. Phase 9 adds determin
 - Trace comparison helpers.
 - Replay-oriented JSONL run-log persistence.
 - CLI support for trace snapshots, trace comparison, and run-log inspection.
+- Checked-in golden snapshots for the three example teams.
+- `golden-check` and explicit `golden-update --approve` CLI workflow.
 
 ## Not started
 
@@ -55,4 +57,4 @@ Phase 0 through Phase 9 hardening are implemented locally. Phase 9 adds determin
 
 ## Next recommended phase
 
-Add checked-in golden snapshots and an intentional approval/update workflow before introducing real LLM/tool execution.
+Next recommended phase: add CI-ready regression commands and a lightweight release checklist before introducing real LLM/tool execution.

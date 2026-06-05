@@ -1,5 +1,12 @@
 """Structured JSONL observability, traces, and replay run logs."""
 
+from team_factory.observability.golden import (
+    DEFAULT_GOLDEN_SNAPSHOT_DIR,
+    GoldenSnapshotResult,
+    GoldenSnapshotStatus,
+    check_golden_snapshots,
+    update_golden_snapshots,
+)
 from team_factory.observability.logger import JsonlEventLogger
 from team_factory.observability.models import (
     AuditEvent,
@@ -18,6 +25,9 @@ from team_factory.observability.traces import (
 
 __all__ = [
     "AuditEvent",
+    "DEFAULT_GOLDEN_SNAPSHOT_DIR",
+    "GoldenSnapshotResult",
+    "GoldenSnapshotStatus",
     "AuditStatus",
     "JsonlEventLogger",
     "JsonlRunStore",
@@ -28,5 +38,7 @@ __all__ = [
     "RunTraceSnapshot",
     "TraceComparison",
     "build_trace_snapshot",
+    "check_golden_snapshots",
     "compare_trace_snapshots",
+    "update_golden_snapshots",
 ]

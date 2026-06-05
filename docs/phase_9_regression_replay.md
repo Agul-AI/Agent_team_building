@@ -91,7 +91,7 @@ Still not implemented:
 
 ## Recommended next hardening work
 
-- Add checked-in golden snapshots for stable example-team smoke scenarios.
-- Add a CLI command to approve/update golden snapshots intentionally.
+- Checked-in golden snapshots for stable example-team smoke scenarios. Implemented in Phase 10.
+- CLI command to approve/update golden snapshots intentionally. Implemented in Phase 10.
 - Add replay endpoints once the production run-log schema is finalized.
 - Only then introduce real LLM/tool adapters behind mockable interfaces.

@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0 through Phase 9 hardening**.
+Current completed scope: **Phase 0 through Phase 10 golden snapshot hardening**.
 
 Implemented now:
 
@@ -20,6 +20,7 @@ Implemented now:
 - Local CLI flows for validation, workflow order, mock runs, tool checks, memory, and evals.
 - Local API skeleton and structured JSONL audit/run observability.
 - Regression trace snapshots and replay-oriented JSONL run-log persistence.
+- Checked-in golden snapshots and explicit `golden-update --approve` workflow.
 
 Not implemented yet:
 
@@ -111,6 +112,19 @@ The Phase 5 evaluation harness executes declared scenarios through supported moc
 The scientific, trading, and travel example teams now run through the mock evaluator. Debate, parallel-research, and custom workflows are still reported as skipped.
 
 
+
+
+## Check golden snapshots
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-check team_specs/*.yaml
+```
+
+Update golden snapshots only after intentional review:
+
+```bash
+~/.venvs/myenv/bin/python scripts/team_factory_cli.py golden-update team_specs/*.yaml --approve
+```
 
 ## Capture and compare deterministic trace snapshots
 

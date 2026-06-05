@@ -1,0 +1,221 @@
+{
+  "agent_order": [
+    "strategy_ideator",
+    "market_data_researcher",
+    "backtest_engineer",
+    "risk_manager",
+    "overfitting_critic",
+    "final_synthesizer"
+  ],
+  "agent_steps": [
+    {
+      "agent_id": "strategy_ideator",
+      "goal": "Generate candidate strategy hypotheses without implying guaranteed returns.",
+      "prior_agent_outputs": [],
+      "role": "planner",
+      "summary": "strategy_ideator (planner) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 0 prior step(s)."
+    },
+    {
+      "agent_id": "market_data_researcher",
+      "goal": "Collect and validate market data sources and assumptions.",
+      "prior_agent_outputs": [
+        "strategy_ideator"
+      ],
+      "role": "researcher",
+      "summary": "market_data_researcher (researcher) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 1 prior step(s)."
+    },
+    {
+      "agent_id": "backtest_engineer",
+      "goal": "Run reproducible backtests with realistic assumptions, costs, and train/test separation.",
+      "prior_agent_outputs": [
+        "strategy_ideator",
+        "market_data_researcher"
+      ],
+      "role": "executor",
+      "summary": "backtest_engineer (executor) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 2 prior step(s)."
+    },
+    {
+      "agent_id": "risk_manager",
+      "goal": "Analyze drawdown, exposure, leverage, costs, slippage, and failure modes.",
+      "prior_agent_outputs": [
+        "strategy_ideator",
+        "market_data_researcher",
+        "backtest_engineer"
+      ],
+      "role": "trading_risk_manager",
+      "summary": "risk_manager (trading_risk_manager) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 3 prior step(s)."
+    },
+    {
+      "agent_id": "overfitting_critic",
+      "goal": "Detect data leakage, overfitting, invalid assumptions, and backtest artifacts.",
+      "prior_agent_outputs": [
+        "strategy_ideator",
+        "market_data_researcher",
+        "backtest_engineer",
+        "risk_manager"
+      ],
+      "role": "critic",
+      "summary": "overfitting_critic (critic) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 4 prior step(s)."
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "goal": "Produce a simulation-only research report with assumptions, caveats, and next steps.",
+      "prior_agent_outputs": [
+        "strategy_ideator",
+        "market_data_researcher",
+        "backtest_engineer",
+        "risk_manager",
+        "overfitting_critic"
+      ],
+      "role": "final_synthesizer",
+      "summary": "final_synthesizer (final_synthesizer) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 5 prior step(s)."
+    }
+  ],
+  "digest": "3e02feeddbbe170c07646494a1f64e379c1df9c8b58f9d93b8b467c0c8929677",
+  "event_sequence": [
+    {
+      "agent_id": null,
+      "data": {
+        "agent_count": 6,
+        "execution_order": [
+          "strategy_ideator",
+          "market_data_researcher",
+          "backtest_engineer",
+          "risk_manager",
+          "overfitting_critic",
+          "final_synthesizer"
+        ],
+        "team_id": "trading_strategy_research_team",
+        "team_version": "0.1.0",
+        "workflow_type": "supervisor_worker"
+      },
+      "message": "Mock workflow run started.",
+      "type": "run_started"
+    },
+    {
+      "agent_id": "strategy_ideator",
+      "data": {
+        "role": "planner",
+        "step_index": 1
+      },
+      "message": "Mock agent 'strategy_ideator' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "strategy_ideator",
+      "data": {
+        "step_index": 1,
+        "summary": "strategy_ideator (planner) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 0 prior step(s)."
+      },
+      "message": "Mock agent 'strategy_ideator' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "market_data_researcher",
+      "data": {
+        "role": "researcher",
+        "step_index": 2
+      },
+      "message": "Mock agent 'market_data_researcher' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "market_data_researcher",
+      "data": {
+        "step_index": 2,
+        "summary": "market_data_researcher (researcher) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 1 prior step(s)."
+      },
+      "message": "Mock agent 'market_data_researcher' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "backtest_engineer",
+      "data": {
+        "role": "executor",
+        "step_index": 3
+      },
+      "message": "Mock agent 'backtest_engineer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "backtest_engineer",
+      "data": {
+        "step_index": 3,
+        "summary": "backtest_engineer (executor) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 2 prior step(s)."
+      },
+      "message": "Mock agent 'backtest_engineer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "risk_manager",
+      "data": {
+        "role": "trading_risk_manager",
+        "step_index": 4
+      },
+      "message": "Mock agent 'risk_manager' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "risk_manager",
+      "data": {
+        "step_index": 4,
+        "summary": "risk_manager (trading_risk_manager) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 3 prior step(s)."
+      },
+      "message": "Mock agent 'risk_manager' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "overfitting_critic",
+      "data": {
+        "role": "critic",
+        "step_index": 5
+      },
+      "message": "Mock agent 'overfitting_critic' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "overfitting_critic",
+      "data": {
+        "step_index": 5,
+        "summary": "overfitting_critic (critic) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 4 prior step(s)."
+      },
+      "message": "Mock agent 'overfitting_critic' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "data": {
+        "role": "final_synthesizer",
+        "step_index": 6
+      },
+      "message": "Mock agent 'final_synthesizer' started.",
+      "type": "agent_started"
+    },
+    {
+      "agent_id": "final_synthesizer",
+      "data": {
+        "step_index": 6,
+        "summary": "final_synthesizer (final_synthesizer) mock-processed task 'Evaluate a simple moving-average crossover strategy for research and simulation only.' after 5 prior step(s)."
+      },
+      "message": "Mock agent 'final_synthesizer' completed.",
+      "type": "agent_completed"
+    },
+    {
+      "agent_id": null,
+      "data": {
+        "final_output": "Mock run for team 'trading_strategy_research_team' workflow 'research_backtest_review' completed with final agent 'final_synthesizer'."
+      },
+      "message": "Mock workflow run completed.",
+      "type": "run_completed"
+    }
+  ],
+  "final_output": "Mock run for team 'trading_strategy_research_team' workflow 'research_backtest_review' completed with final agent 'final_synthesizer'.",
+  "input": {
+    "task": "Evaluate a simple moving-average crossover strategy for research and simulation only."
+  },
+  "schema_version": "0.1",
+  "status": "completed",
+  "team_id": "trading_strategy_research_team",
+  "team_version": "0.1.0",
+  "workflow_id": "research_backtest_review"
+}
