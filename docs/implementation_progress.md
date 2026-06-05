@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 and Phase 1 are implemented in this initial repository setup.
+Phase 0, Phase 1, and Phase 2 are implemented locally. Phase 2 adds a deterministic mock orchestrator for sequential workflows only.
 
 ## Completed
 
@@ -18,10 +18,11 @@ Phase 0 and Phase 1 are implemented in this initial repository setup.
   - travel planning
 - Unit tests for valid specs and important invalid specs.
 - Spec validation helper script.
+- Deterministic mock orchestrator for sequential workflows.
+- Integration tests for mock workflow compilation and execution.
 
 ## Not started
 
-- Runtime orchestration.
 - LangGraph adapter.
 - Tool execution.
 - Memory persistence.
@@ -32,4 +33,4 @@ Phase 0 and Phase 1 are implemented in this initial repository setup.
 
 ## Next recommended phase
 
-Phase 2: implement a deterministic mock orchestrator for sequential workflows only, without real LLM calls or tool execution.
+Phase 3: implement the tool registry and permission layer with manifests only, without executing risky tools.

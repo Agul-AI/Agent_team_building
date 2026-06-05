@@ -12,8 +12,8 @@
     <h1>Plan & Implementation Progress</h1>
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
-      evaluates, and eventually deploys reusable AI-agent teams. Current scope is
-      Phase 0 and Phase 1 only: architecture/docs plus the minimal team spec format.
+      evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
+      Phase 0, Phase 1, and Phase 2: architecture/docs, the minimal team spec format, and a deterministic mock orchestrator.
     </p>
   </header>
 
@@ -34,7 +34,8 @@
           <li class="status-ok">Phase 0 docs and repo skeleton are complete.</li>
           <li class="status-ok">Phase 1 Pydantic models, YAML loading, and validation are complete.</li>
           <li class="status-ok">Three example team specs are included.</li>
-          <li class="status-next">Runtime orchestration has intentionally not started.</li>
+          <li class="status-ok">A deterministic mock orchestrator for sequential workflows is complete.</li>
+          <li class="status-next">Real LLM calls, tool execution, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
 
@@ -57,8 +58,8 @@
         <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
       </p>
       <p>
-        The first commit implements only the spec and validation side. LangGraph/runtime work is deferred
-        until Phase 2+ so the system remains simple and inspectable at the foundation.
+        The current implementation includes spec validation plus a deterministic sequential mock runtime. LangGraph, real LLM calls, tools, and persistence are deferred
+        so the system remains simple and inspectable at the foundation.
       </p>
     </section>
 
@@ -88,7 +89,7 @@
       <div class="timeline">
         <div class="phase"><strong>Phase 0</strong><span class="status-ok">Requirements, architecture, docs, repo skeleton — complete.</span></div>
         <div class="phase"><strong>Phase 1</strong><span class="status-ok">Minimal team spec format, YAML loader, validation, tests — complete.</span></div>
-        <div class="phase"><strong>Phase 2</strong><span>Basic deterministic mock orchestrator — not started.</span></div>
+        <div class="phase"><strong>Phase 2</strong><span class="status-ok">Basic deterministic mock orchestrator — complete.</span></div>
         <div class="phase"><strong>Phase 3</strong><span>Tool registry and permission layer — not started.</span></div>
         <div class="phase"><strong>Phase 4</strong><span>Memory layer — not started.</span></div>
         <div class="phase"><strong>Phase 5</strong><span>Evaluation harness — not started.</span></div>

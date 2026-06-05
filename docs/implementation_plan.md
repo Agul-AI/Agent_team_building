@@ -18,7 +18,7 @@ Recommended MVP stack:
 ## B. Assumptions
 
 1. The first product is local-first and inspectable.
-2. Runtime orchestration starts after Phase 1.
+2. Runtime orchestration starts with deterministic mock execution before real LLM/tool integration.
 3. Trading-related teams are research/simulation-only unless separately extended with legal/compliance review.
 4. High-impact actions require explicit human approval.
 5. Every run should eventually be logged, replayable, and evaluable.
@@ -41,7 +41,7 @@ Team Spec YAML
   -> Logs + Replay + Reports
 ```
 
-Phase 0/1 implements only the first three pieces:
+Phase 0/1 implemented the foundation:
 
 - docs and plan
 - repository skeleton
@@ -50,7 +50,7 @@ Phase 0/1 implements only the first three pieces:
 - validation tests
 - example team specs
 
-Runtime execution, tools, memory persistence, and evaluations are future phases.
+Phase 2 now adds deterministic mock execution for sequential workflows only. Real LLM execution, tool execution, memory persistence, and evaluations are future phases.
 
 ## E. Alternative architectures and tradeoffs
 
@@ -232,7 +232,7 @@ Phase 1 includes three example specs:
 |---|---|---|
 | Phase 0 | Requirements, architecture, docs, repo skeleton | Implemented in this initial commit |
 | Phase 1 | Minimal team spec format, YAML loader, validation, tests | Implemented in this initial commit |
-| Phase 2 | Basic orchestrator | Not started |
+| Phase 2 | Basic deterministic mock orchestrator | Implemented locally |
 | Phase 3 | Tool registry | Not started |
 | Phase 4 | Memory layer | Not started |
 | Phase 5 | Evaluation harness | Not started |
