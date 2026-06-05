@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class AuthorizationStatus(str, Enum):
+class AuthorizationStatus(StrEnum):
     """Possible outcomes of a tool authorization check."""
 
     ALLOWED = "allowed"

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, and Phase 3 are implemented locally. Phase 3 adds a manifest-only tool registry and permission layer.
+Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 are implemented locally. Phase 4 adds a standalone local memory foundation with SQLite persistence, retention, and redaction.
 
 ## Completed
 
@@ -22,12 +22,16 @@ Phase 0, Phase 1, Phase 2, and Phase 3 are implemented locally. Phase 3 adds a m
 - Integration tests for mock workflow compilation and execution.
 - Manifest-only tool registry and permission decisions.
 - Unit tests for tool allowlists, disabled tools, missing permissions, and approval gates.
+- SQLite-backed local memory store.
+- Deterministic redaction helper for sensitive-looking keys and secret-like strings.
+- Unit tests for memory persistence, retention, deletion, export, and policy lookup.
 
 ## Not started
 
 - LangGraph adapter.
 - Tool execution.
-- Memory persistence.
+- Runtime memory integration.
+- Vector memory and semantic retrieval.
 - Evaluation harness execution.
 - CLI create/run/eval flows.
 - API server.
@@ -35,4 +39,4 @@ Phase 0, Phase 1, Phase 2, and Phase 3 are implemented locally. Phase 3 adds a m
 
 ## Next recommended phase
 
-Phase 4: implement the memory layer foundation with local persistence and retention/redaction policies, without adding long-term vector memory yet.
+Phase 5: implement the evaluation harness foundation with scenario execution over deterministic mock runs and static rubric/report structures.

@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, and Phase 3**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4**.
 
 Implemented now:
 
@@ -14,6 +14,7 @@ Implemented now:
 - Unit tests for valid and invalid spec validation behavior.
 - Deterministic mock orchestrator for sequential workflows.
 - Manifest-only tool registry and permission decisions.
+- Local SQLite memory foundation with retention and redaction.
 
 Not implemented yet:
 
@@ -21,7 +22,8 @@ Not implemented yet:
 - Non-sequential workflow runtime semantics.
 - Tool execution.
   - Phase 3 can authorize proposed calls but intentionally does not execute them.
-- Memory persistence.
+- Runtime memory integration.
+- Vector memory and semantic retrieval.
 - Evaluation runtime.
 - CLI workflows beyond skeleton scripts.
 - Deployment.
@@ -63,6 +65,23 @@ request = ToolCallRequest(
     purpose="Research museum opening hours.",
 )
 print(registry.authorize(request).status)
+```
+
+## Store local memory with redaction
+
+The Phase 4 memory layer is standalone and local. It does not automatically feed agent prompts yet.
+
+```python
+from team_factory.memory import MemoryCategory, SQLiteMemoryStore
+
+with SQLiteMemoryStore("local_memory.sqlite3") as store:
+    record = store.put(
+        category=MemoryCategory.PROJECT,
+        key="decision:architecture",
+        value={"decision": "Use specs first.", "api_key": "secret"},
+        retention_days=365,
+    )
+    print(record.value)
 ```
 
 ## View the local website

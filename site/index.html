@@ -13,7 +13,7 @@
     <p class="lead">
       A local planning dashboard for a spec-driven platform that designs, validates,
       evaluates, and eventually deploys reusable AI-agent teams. Current completed scope covers
-      Phase 0, Phase 1, Phase 2, and Phase 3: architecture/docs, the minimal team spec format, a deterministic mock orchestrator, and manifest-only tool permissions.
+      Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4: architecture/docs, the minimal team spec format, a deterministic mock orchestrator, manifest-only tool permissions, and a local memory foundation.
     </p>
   </header>
 
@@ -36,7 +36,8 @@
           <li class="status-ok">Three example team specs are included.</li>
           <li class="status-ok">A deterministic mock orchestrator for sequential workflows is complete.</li>
           <li class="status-ok">A manifest-only tool registry and permission layer is complete.</li>
-          <li class="status-next">Real LLM calls, actual tool execution, and LangGraph integration have intentionally not started.</li>
+          <li class="status-ok">A local SQLite memory foundation with retention/redaction is complete.</li>
+          <li class="status-next">Real LLM calls, actual tool execution, vector memory, and LangGraph integration have intentionally not started.</li>
         </ul>
       </article>
 
@@ -59,7 +60,7 @@
         <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
       </p>
       <p>
-        The current implementation includes spec validation, a deterministic sequential mock runtime, and manifest-only tool authorization. LangGraph, real LLM calls, actual tool execution, and persistence are deferred
+        The current implementation includes spec validation, a deterministic sequential mock runtime, manifest-only tool authorization, and standalone local memory persistence. LangGraph, real LLM calls, actual tool execution, vector memory, and runtime memory integration are deferred
         so the system remains simple and inspectable at the foundation.
       </p>
     </section>
@@ -92,8 +93,8 @@
         <div class="phase"><strong>Phase 1</strong><span class="status-ok">Minimal team spec format, YAML loader, validation, tests — complete.</span></div>
         <div class="phase"><strong>Phase 2</strong><span class="status-ok">Basic deterministic mock orchestrator — complete.</span></div>
         <div class="phase"><strong>Phase 3</strong><span class="status-ok">Tool registry and permission layer — complete in manifest-only mode.</span></div>
-        <div class="phase"><strong>Phase 4</strong><span>Memory layer — next.</span></div>
-        <div class="phase"><strong>Phase 5</strong><span>Evaluation harness — not started.</span></div>
+        <div class="phase"><strong>Phase 4</strong><span class="status-ok">Memory layer foundation — complete.</span></div>
+        <div class="phase"><strong>Phase 5</strong><span>Evaluation harness — next.</span></div>
         <div class="phase"><strong>Phase 6</strong><span>Example runnable teams — not started.</span></div>
         <div class="phase"><strong>Phase 7</strong><span>CLI/UI flows — not started.</span></div>
         <div class="phase"><strong>Phase 8</strong><span>Deployment and monitoring — not started.</span></div>

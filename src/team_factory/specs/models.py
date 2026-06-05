@@ -6,7 +6,7 @@ agents, compile workflows, call tools, or persist runtime state.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, NonNegativeFloat, PositiveInt, model_validator
@@ -22,7 +22,7 @@ class StrictBaseModel(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
 
-class RiskLevel(str, Enum):
+class RiskLevel(StrEnum):
     """Risk level attached to a tool manifest."""
 
     LOW = "low"
@@ -31,7 +31,7 @@ class RiskLevel(str, Enum):
     CRITICAL = "critical"
 
 
-class SideEffectLevel(str, Enum):
+class SideEffectLevel(StrEnum):
     """How much a tool can change the outside world."""
 
     NONE = "none"
@@ -41,7 +41,7 @@ class SideEffectLevel(str, Enum):
     HIGH_IMPACT = "high_impact"
 
 
-class WorkflowType(str, Enum):
+class WorkflowType(StrEnum):
     """Workflow families supported by the team-factory spec layer."""
 
     SEQUENTIAL = "sequential"
@@ -52,7 +52,7 @@ class WorkflowType(str, Enum):
     CUSTOM = "custom"
 
 
-class DeploymentMode(str, Enum):
+class DeploymentMode(StrEnum):
     """Declarative deployment mode. Execution is future work."""
 
     LOCAL_CLI = "local_cli"
@@ -302,7 +302,9 @@ class TeamSpec(StrictBaseModel):
     @model_validator(mode="after")
     def validate_cross_references(self) -> TeamSpec:
         agent_ids = [agent.id for agent in self.agents]
-        duplicate_agents = sorted({agent_id for agent_id in agent_ids if agent_ids.count(agent_id) > 1})
+        duplicate_agents = sorted(
+            {agent_id for agent_id in agent_ids if agent_ids.count(agent_id) > 1}
+        )
         if duplicate_agents:
             msg = "duplicate agent ids: " + ", ".join(duplicate_agents)
             raise ValueError(msg)

@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class EventType(str, Enum):
+class EventType(StrEnum):
     """Event types emitted by the deterministic mock runtime."""
 
     RUN_STARTED = "run_started"
@@ -28,7 +28,7 @@ class RunEvent(BaseModel):
     event_id: str = Field(default_factory=lambda: str(uuid4()))
     run_id: str
     type: EventType
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     workflow_id: str
     agent_id: str | None = None
     message: str

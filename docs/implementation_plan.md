@@ -50,7 +50,7 @@ Phase 0/1 implemented the foundation:
 - validation tests
 - example team specs
 
-Phase 2 adds deterministic mock execution for sequential workflows only. Phase 3 adds manifest-only tool authorization. Real LLM execution, actual tool execution, memory persistence, and evaluations are future phases.
+Phase 2 adds deterministic mock execution for sequential workflows only. Phase 3 adds manifest-only tool authorization. Phase 4 adds standalone SQLite memory persistence, retention, and redaction. Real LLM execution, actual tool execution, runtime memory integration, vector memory, and evaluations are future phases.
 
 ## E. Alternative architectures and tradeoffs
 
@@ -234,7 +234,7 @@ Phase 1 includes three example specs:
 | Phase 1 | Minimal team spec format, YAML loader, validation, tests | Implemented in this initial commit |
 | Phase 2 | Basic deterministic mock orchestrator | Implemented locally |
 | Phase 3 | Manifest-only tool registry and permission layer | Implemented locally |
-| Phase 4 | Memory layer | Not started |
+| Phase 4 | Local SQLite memory foundation | Implemented locally |
 | Phase 5 | Evaluation harness | Not started |
 | Phase 6 | Example team runtime demos | Not started |
 | Phase 7 | CLI/UI | Not started |

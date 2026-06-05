@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from team_factory.orchestration.runtime import CompiledWorkflow, WorkflowRunError
-from team_factory.specs.models import AgentSpec, TeamSpec, WorkflowSpec, WorkflowType
+from team_factory.specs.models import TeamSpec, WorkflowSpec, WorkflowType
 
 SUPPORTED_PHASE2_WORKFLOWS = {WorkflowType.SEQUENTIAL}
 

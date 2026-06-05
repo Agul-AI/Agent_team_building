@@ -7,7 +7,7 @@ but it cannot execute tools.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from team_factory.specs.models import RiskLevel, SideEffectLevel, ToolSpec
 
 
-class ToolExecutionMode(str, Enum):
+class ToolExecutionMode(StrEnum):
     """Execution support level for a tool manifest."""
 
     MANIFEST_ONLY = "manifest_only"
