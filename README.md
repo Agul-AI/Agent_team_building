@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0 through Phase 10 golden snapshot hardening**.
+Current completed scope: **Phase 0 through Phase 11 CI/release hardening**.
 
 Implemented now:
 
@@ -21,6 +21,7 @@ Implemented now:
 - Local API skeleton and structured JSONL audit/run observability.
 - Regression trace snapshots and replay-oriented JSONL run-log persistence.
 - Checked-in golden snapshots and explicit `golden-update --approve` workflow.
+- CI-ready deterministic regression script and lightweight release checklist.
 
 Not implemented yet:
 
@@ -34,6 +35,19 @@ Not implemented yet:
 - Production API framework, auth/RBAC, deployment manifests, dashboards, and metrics backends.
 - Deployment.
 
+
+
+## Run the CI regression suite locally
+
+```bash
+scripts/ci_regression.sh
+```
+
+Run release checks before tagging or merging major changes:
+
+```bash
+scripts/release_check.sh
+```
 
 ## Use the local CLI
 

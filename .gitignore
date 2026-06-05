@@ -22,6 +22,8 @@ dist/
 build/
 
 # Runtime artifacts
+examples/artifacts/
+examples/runs/
 runs/
 artifacts/
 *.sqlite3

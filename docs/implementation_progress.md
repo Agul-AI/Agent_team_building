@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 10 golden snapshot hardening are implemented locally. Phase 10 adds checked-in golden snapshots and an explicit approval/update workflow.
+Phase 0 through Phase 11 CI/release hardening are implemented locally. Phase 11 adds CI-ready deterministic regression commands and a lightweight release checklist.
 
 ## Completed
 
@@ -43,6 +43,9 @@ Phase 0 through Phase 10 golden snapshot hardening are implemented locally. Phas
 - CLI support for trace snapshots, trace comparison, and run-log inspection.
 - Checked-in golden snapshots for the three example teams.
 - `golden-check` and explicit `golden-update --approve` CLI workflow.
+- `scripts/ci_regression.sh` deterministic regression suite.
+- `.github/workflows/ci.yml` GitHub Actions workflow.
+- `scripts/release_check.sh` and `docs/release_checklist.md`.
 
 ## Not started
 
@@ -57,4 +60,4 @@ Phase 0 through Phase 10 golden snapshot hardening are implemented locally. Phas
 
 ## Next recommended phase
 
-Next recommended phase: add CI-ready regression commands and a lightweight release checklist before introducing real LLM/tool execution.
+Introduce the first real LLM adapter behind deterministic mocks, with strict opt-in configuration and no autonomous tool execution.
