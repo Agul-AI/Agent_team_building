@@ -2,7 +2,7 @@
 
 A greenfield, spec-driven platform for designing, configuring, validating, evaluating, and eventually deploying specialized AI agent teams.
 
-Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4**.
+Current completed scope: **Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5**.
 
 Implemented now:
 
@@ -15,6 +15,7 @@ Implemented now:
 - Deterministic mock orchestrator for sequential workflows.
 - Manifest-only tool registry and permission decisions.
 - Local SQLite memory foundation with retention and redaction.
+- Deterministic evaluation harness and Markdown scenario reports.
 
 Not implemented yet:
 
@@ -24,7 +25,7 @@ Not implemented yet:
   - Phase 3 can authorize proposed calls but intentionally does not execute them.
 - Runtime memory integration.
 - Vector memory and semantic retrieval.
-- Evaluation runtime.
+- Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
 - CLI workflows beyond skeleton scripts.
 - Deployment.
 
@@ -83,6 +84,16 @@ with SQLiteMemoryStore("local_memory.sqlite3") as store:
     )
     print(record.value)
 ```
+
+## Run deterministic mock evaluations
+
+The Phase 5 evaluation harness executes declared scenarios through supported mock workflows and writes static reports.
+
+```bash
+~/.venvs/myenv/bin/python scripts/run_mock_evals.py team_specs/*.yaml
+```
+
+Sequential workflows can run through the mock orchestrator. Unsupported workflow types are reported as skipped.
 
 ## View the local website
 

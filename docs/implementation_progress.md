@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 are implemented locally. Phase 4 adds a standalone local memory foundation with SQLite persistence, retention, and redaction.
+Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 are implemented locally. Phase 5 adds a deterministic evaluation harness and Markdown scenario reports.
 
 ## Completed
 
@@ -25,6 +25,9 @@ Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 are implemented locally. Phase 4
 - SQLite-backed local memory store.
 - Deterministic redaction helper for sensitive-looking keys and secret-like strings.
 - Unit tests for memory persistence, retention, deletion, export, and policy lookup.
+- Deterministic evaluation harness for declared scenarios.
+- Markdown evaluation report generation.
+- Unit tests for executable, skipped, empty, and unknown-workflow evaluation reports.
 
 ## Not started
 
@@ -32,11 +35,11 @@ Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 are implemented locally. Phase 4
 - Tool execution.
 - Runtime memory integration.
 - Vector memory and semantic retrieval.
-- Evaluation harness execution.
+- Semantic evaluation scoring, LLM judges, and domain-specific metric computation.
 - CLI create/run/eval flows.
 - API server.
 - Deployment and monitoring.
 
 ## Next recommended phase
 
-Phase 5: implement the evaluation harness foundation with scenario execution over deterministic mock runs and static rubric/report structures.
+Phase 6: make example teams more runnable by adding sequential mock-compatible variants or expanding mock runtime support for critique-revision and supervisor-worker workflows.
