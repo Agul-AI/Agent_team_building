@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 
 from team_factory.llm import (
+    DEFAULT_LLM_MODEL,
     DeterministicLLMAdapter,
     LLMAdapterConfig,
     LLMAdapterError,
@@ -60,7 +61,7 @@ def test_deterministic_llm_adapter_is_default_and_stable() -> None:
     response = adapter.generate(LLMRequest(prompt="Hello", instructions="Be concise."))
 
     assert response.provider == "deterministic"
-    assert response.model == "deterministic-mock"
+    assert response.model == DEFAULT_LLM_MODEL
     assert "prompt=Hello" in response.text
     assert response.raw_response == {"deterministic": True}
 
@@ -69,6 +70,14 @@ def test_build_llm_adapter_returns_deterministic_adapter() -> None:
     adapter = build_llm_adapter(LLMAdapterConfig())
 
     assert isinstance(adapter, DeterministicLLMAdapter)
+
+
+def test_default_llm_model_is_codex_and_env_overridable(monkeypatch) -> None:
+    monkeypatch.delenv("TEAM_FACTORY_DEFAULT_LLM_MODEL", raising=False)
+    assert LLMAdapterConfig().model == DEFAULT_LLM_MODEL
+
+    monkeypatch.setenv("TEAM_FACTORY_DEFAULT_LLM_MODEL", "custom-codex")
+    assert LLMAdapterConfig().model == "custom-codex"
 
 
 def test_real_llm_config_requires_explicit_enable(monkeypatch) -> None:

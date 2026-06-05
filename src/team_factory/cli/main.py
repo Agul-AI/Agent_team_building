@@ -23,6 +23,7 @@ from team_factory.llm import (
     LLMProvider,
     LLMRequest,
     build_llm_adapter,
+    default_llm_model,
 )
 from team_factory.memory import MemoryCategory, SQLiteMemoryStore
 from team_factory.observability import (
@@ -115,7 +116,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=LLMProvider.DETERMINISTIC.value,
         help="LLM provider. Real providers require explicit opt-in.",
     )
-    llm_parser.add_argument("--model", default="deterministic-mock", help="Model id.")
+    llm_parser.add_argument(
+        "--model",
+        default=default_llm_model(),
+        help="Model id. Defaults to TEAM_FACTORY_DEFAULT_LLM_MODEL or the Codex model default.",
+    )
     llm_parser.add_argument(
         "--enable-real-llm",
         action="store_true",

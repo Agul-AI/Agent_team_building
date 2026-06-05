@@ -30,7 +30,7 @@
         validation, deterministic mock workflows, manifest-only tool authorization,
         local memory, deterministic evaluations, CLI/API flows, observability, trace
         snapshots, run logs, golden baselines, CI/release checks, and a strict opt-in
-        LLM adapter layer.
+        LLM adapter layer with <code>gpt-5.3-codex</code> as the default model id.
       </p>
     </section>
 
@@ -41,6 +41,7 @@
           <li>No autonomous tool execution exists.</li>
           <li>Tool checks authorize or reject proposed calls only.</li>
           <li>Real LLM calls are not default and are excluded from CI.</li>
+          <li>Codex is the default model id, but deterministic remains the default provider.</li>
           <li>Golden snapshot updates require explicit <code>--approve</code>.</li>
           <li>High-impact and critical tools require approval gates.</li>
         </ul>

@@ -15,6 +15,19 @@ class LLMProvider(StrEnum):
     OPENAI_RESPONSES = "openai_responses"
 
 
+DEFAULT_LLM_MODEL = "gpt-5.3-codex"
+
+
+def default_llm_model() -> str:
+    """Return the configured default LLM model id.
+
+    The factory defaults to a Codex model identifier while keeping the provider
+    deterministic unless real LLM usage is explicitly enabled.
+    """
+
+    return os.environ.get("TEAM_FACTORY_DEFAULT_LLM_MODEL", DEFAULT_LLM_MODEL)
+
+
 class LLMAdapterConfig(BaseModel):
     """Strict opt-in adapter config.
 
@@ -26,7 +39,7 @@ class LLMAdapterConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     provider: LLMProvider = LLMProvider.DETERMINISTIC
-    model: str = "deterministic-mock"
+    model: str = Field(default_factory=default_llm_model)
     enable_real_llm: bool = False
     api_key_env: str = "OPENAI_API_KEY"
     base_url: str = "https://api.openai.com/v1"

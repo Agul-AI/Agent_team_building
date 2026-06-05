@@ -159,7 +159,13 @@ scripts/ci_regression.sh</code></pre>
 
     <section class="card">
       <h2>9. Generate text with the LLM adapter layer</h2>
-      <p>Deterministic adapter, safe for CI and local regression:</p>
+      <p>
+        The factory now uses <code>gpt-5.3-codex</code> as the default model identifier.
+        The provider is still deterministic unless real LLM use is explicitly enabled.
+        Override the model with <code>--model</code> or
+        <code>TEAM_FACTORY_DEFAULT_LLM_MODEL</code>.
+      </p>
+      <p>Deterministic adapter using the Codex model identifier, safe for CI and local regression:</p>
       <pre><code>~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --instructions "Be concise."</code></pre>
@@ -169,7 +175,7 @@ export OPENAI_API_KEY=...
 ~/.venvs/myenv/bin/python scripts/team_factory_cli.py llm-generate \
   "Summarize the platform in one sentence." \
   --provider openai_responses \
-  --model gpt-5 \
+  --model gpt-5.3-codex \
   --enable-real-llm</code></pre>
       <p>
         The real adapter sends <code>tools=[]</code>, <code>tool_choice="none"</code>, and

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 adds a deterministic default LLM adapter and a strict opt-in OpenAI Responses adapter path.
+Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 adds a deterministic default LLM adapter, a Codex model identifier default, and a strict opt-in OpenAI Responses adapter path.
 
 ## Completed
 
@@ -48,6 +48,7 @@ Phase 0 through Phase 12 opt-in LLM adapter are implemented locally. Phase 12 ad
 - `scripts/release_check.sh` and `docs/release_checklist.md`.
 - Provider-neutral LLM request/response models.
 - Deterministic default LLM adapter.
+- Default LLM model identifier set to `gpt-5.3-codex`, while provider defaults to deterministic.
 - Strict opt-in OpenAI Responses adapter with no tools.
 - `llm-generate` CLI command.
 

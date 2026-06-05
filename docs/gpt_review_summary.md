@@ -113,6 +113,8 @@ The current completed scope is Phase 0 through Phase 12.
 - Added deterministic default adapter: `DeterministicLLMAdapter`.
 - Added real-provider path: `OpenAIResponsesLLMAdapter`.
 - Added `llm-generate` CLI command.
+- Set the default model identifier to `gpt-5.3-codex`, with optional override
+  through `TEAM_FACTORY_DEFAULT_LLM_MODEL` or `--model`.
 - Real LLM usage requires all gates:
   1. provider `openai_responses`
   2. config/CLI opt-in: `enable_real_llm=True` or `--enable-real-llm`
