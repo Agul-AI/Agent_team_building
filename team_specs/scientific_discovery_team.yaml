@@ -1,0 +1,129 @@
+schema_version: "0.1"
+team_id: "scientific_discovery_team"
+team_version: "0.1.0"
+name: "Scientific Discovery Team"
+domain: "science"
+purpose: "Assist with literature review, hypothesis generation, experiment design, analysis planning, and paper drafting."
+
+model_profiles:
+  default:
+    provider: "openai"
+    model: "configurable"
+    temperature: 0.2
+
+agents:
+  - id: "literature_reviewer"
+    role: "researcher"
+    goal: "Find and summarize relevant scientific literature."
+    allowed_tools: ["paper_search", "web_search"]
+    memory_access: ["short_term", "project", "domain_knowledge"]
+    model_profile: "default"
+    constraints:
+      - "Never invent citations."
+      - "Label unsupported claims as uncertain."
+
+  - id: "hypothesis_generator"
+    role: "scientific_hypothesis_generator"
+    goal: "Generate plausible, testable hypotheses from the literature review."
+    memory_access: ["short_term", "project", "domain_knowledge"]
+    model_profile: "default"
+
+  - id: "experiment_designer"
+    role: "executor"
+    goal: "Design feasible experiments or simulations to test hypotheses."
+    allowed_tools: ["calculator"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "scientific_critic"
+    role: "critic"
+    goal: "Identify unsupported claims, weak assumptions, missing controls, and reproducibility issues."
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "final_synthesizer"
+    role: "final_synthesizer"
+    goal: "Produce a clear, cited research brief with uncertainty and next-step recommendations."
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+workflows:
+  - id: "main"
+    type: "critique_and_revision"
+    steps:
+      - "literature_reviewer"
+      - "hypothesis_generator"
+      - "experiment_designer"
+      - "scientific_critic"
+      - "final_synthesizer"
+    stopping_criteria:
+      max_iterations: 3
+      max_wall_time_minutes: 45
+      max_tool_calls: 30
+      require_terminal_node: true
+    human_checkpoints:
+      - "before publishing external-facing scientific claims"
+
+tools:
+  - id: "paper_search"
+    provider: "future_adapter"
+    description: "Search scholarly literature APIs."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "web_search"
+    provider: "future_adapter"
+    description: "Search the web for background context."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "calculator"
+    provider: "builtin"
+    description: "Perform deterministic calculations."
+    risk_level: "low"
+    side_effect_level: "none"
+
+memory:
+  short_term:
+    enabled: true
+  project:
+    enabled: true
+    store: "sqlite"
+    retention_days: 365
+  domain_knowledge:
+    enabled: true
+    store: "curated_vector_index"
+  avoid_storing:
+    - "credentials"
+    - "unnecessary personal data"
+
+evaluation:
+  metrics:
+    - "citation_quality"
+    - "novelty"
+    - "hypothesis_plausibility"
+    - "experimental_feasibility"
+    - "reproducibility"
+    - "unsupported_claim_rate"
+  scenarios:
+    - id: "basic_literature_brief"
+      input: "Survey recent approaches to automated materials discovery."
+      expected_properties:
+        - "distinguishes cited facts from speculation"
+        - "proposes testable hypotheses"
+        - "includes reproducibility considerations"
+
+safety:
+  prohibited_actions:
+    - "fabricate_citations"
+    - "state_unverified_claims_as_facts"
+  human_review:
+    required_before:
+      - "publishing_content"
+  privacy:
+    avoid_storing:
+      - "credentials"
+      - "unnecessary personal data"
+    redact_logs: true
+
+deployment:
+  mode: "local_cli"
+  notes: "Phase 1 spec only; no runtime orchestration yet."

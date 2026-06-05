@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Team Factory Plan & Progress</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <span class="badge">Agent Team Factory</span>
+    <h1>Plan & Implementation Progress</h1>
+    <p class="lead">
+      A local planning dashboard for a spec-driven platform that designs, validates,
+      evaluates, and eventually deploys reusable AI-agent teams. Current scope is
+      Phase 0 and Phase 1 only: architecture/docs plus the minimal team spec format.
+    </p>
+  </header>
+
+  <main>
+    <section class="grid">
+      <article class="card">
+        <h2>What this platform is</h2>
+        <p>
+          A <strong>team factory</strong>, not one hard-coded team. Users define new teams
+          using structured YAML specs that describe agents, roles, tools, memory,
+          workflows, evaluation criteria, safety constraints, and deployment intent.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Current implementation</h2>
+        <ul>
+          <li class="status-ok">Phase 0 docs and repo skeleton are complete.</li>
+          <li class="status-ok">Phase 1 Pydantic models, YAML loading, and validation are complete.</li>
+          <li class="status-ok">Three example team specs are included.</li>
+          <li class="status-next">Runtime orchestration has intentionally not started.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Local files</h2>
+        <ul>
+          <li><code>docs/implementation_plan.md</code></li>
+          <li><code>docs/implementation_progress.md</code></li>
+          <li><code>team_specs/*.yaml</code></li>
+          <li><code>src/team_factory/specs/</code></li>
+          <li><code>tests/unit/test_spec_validation.py</code></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Architecture</h2>
+      <p>The intended future flow is:</p>
+      <p>
+        <code>Team Spec YAML -> Validate -> Compile -> Run -> Log -> Evaluate -> Revise -> Deploy</code>
+      </p>
+      <p>
+        The first commit implements only the spec and validation side. LangGraph/runtime work is deferred
+        until Phase 2+ so the system remains simple and inspectable at the foundation.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Example teams</h2>
+        <ul>
+          <li>Scientific discovery team</li>
+          <li>Trading strategy research team</li>
+          <li>Travel planning team</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Safety foundation</h2>
+        <ul>
+          <li>Every workflow requires hard stopping criteria.</li>
+          <li>Critical enabled tools require approval.</li>
+          <li>High-impact enabled tools require approval.</li>
+          <li>High-impact actions must appear in human-review gates.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>Roadmap</h2>
+      <div class="timeline">
+        <div class="phase"><strong>Phase 0</strong><span class="status-ok">Requirements, architecture, docs, repo skeleton — complete.</span></div>
+        <div class="phase"><strong>Phase 1</strong><span class="status-ok">Minimal team spec format, YAML loader, validation, tests — complete.</span></div>
+        <div class="phase"><strong>Phase 2</strong><span>Basic deterministic mock orchestrator — not started.</span></div>
+        <div class="phase"><strong>Phase 3</strong><span>Tool registry and permission layer — not started.</span></div>
+        <div class="phase"><strong>Phase 4</strong><span>Memory layer — not started.</span></div>
+        <div class="phase"><strong>Phase 5</strong><span>Evaluation harness — not started.</span></div>
+        <div class="phase"><strong>Phase 6</strong><span>Example runnable teams — not started.</span></div>
+        <div class="phase"><strong>Phase 7</strong><span>CLI/UI flows — not started.</span></div>
+        <div class="phase"><strong>Phase 8</strong><span>Deployment and monitoring — not started.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Validation commands</h2>
+      <p>From the repository root:</p>
+      <p><code>~/.venvs/myenv/bin/python -m pytest</code></p>
+      <p><code>~/.venvs/myenv/bin/python scripts/validate_specs.py team_specs/*.yaml</code></p>
+    </section>
+  </main>
+
+  <footer>
+    Local static site. Open <code>site/index.html</code> directly in a browser.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,147 @@
+schema_version: "0.1"
+team_id: "travel_planning_team"
+team_version: "0.1.0"
+name: "Travel Planning Team"
+domain: "travel"
+purpose: "Gather preferences, research destinations, compare options, and generate feasible itineraries."
+
+model_profiles:
+  default:
+    provider: "openai"
+    model: "configurable"
+    temperature: 0.3
+
+agents:
+  - id: "preference_gatherer"
+    role: "planner"
+    goal: "Clarify preferences, constraints, dates, budget, and must-haves."
+    memory_access: ["short_term", "user_preferences"]
+    model_profile: "default"
+
+  - id: "destination_researcher"
+    role: "researcher"
+    goal: "Research destinations, attractions, transit, lodging options, and constraints."
+    allowed_tools: ["web_search", "maps_api", "flight_search"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "budget_optimizer"
+    role: "travel_budget_optimizer"
+    goal: "Optimize itinerary candidates against budget and preference constraints."
+    allowed_tools: ["calculator"]
+    memory_access: ["short_term", "project", "user_preferences"]
+    model_profile: "default"
+
+  - id: "feasibility_critic"
+    role: "critic"
+    goal: "Check travel times, fatigue, schedule feasibility, and booking reliability."
+    allowed_tools: ["maps_api"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "itinerary_synthesizer"
+    role: "final_synthesizer"
+    goal: "Produce a final itinerary with alternatives, caveats, and approval checkpoints."
+    memory_access: ["short_term", "project", "user_preferences"]
+    model_profile: "default"
+
+workflows:
+  - id: "plan_trip"
+    type: "sequential"
+    steps:
+      - "preference_gatherer"
+      - "destination_researcher"
+      - "budget_optimizer"
+      - "feasibility_critic"
+      - "itinerary_synthesizer"
+    stopping_criteria:
+      max_iterations: 3
+      max_wall_time_minutes: 30
+      max_tool_calls: 35
+      require_terminal_node: true
+    human_checkpoints:
+      - "before booking travel"
+      - "before making purchases"
+      - "before sending emails"
+
+tools:
+  - id: "web_search"
+    provider: "future_adapter"
+    description: "Search public web travel information."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "maps_api"
+    provider: "future_adapter"
+    description: "Read travel times and map data."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "flight_search"
+    provider: "future_adapter"
+    description: "Read flight availability and indicative pricing."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "calculator"
+    provider: "builtin"
+    description: "Perform deterministic budget calculations."
+    risk_level: "low"
+    side_effect_level: "none"
+  - id: "booking_api"
+    provider: "future_adapter"
+    description: "Disabled placeholder for potential future booking integration."
+    enabled: false
+    risk_level: "critical"
+    side_effect_level: "high_impact"
+    approval_required: true
+
+memory:
+  short_term:
+    enabled: true
+  project:
+    enabled: true
+    store: "sqlite"
+    retention_days: 180
+  user_preferences:
+    enabled: true
+    store: "sqlite"
+    retention_days: 365
+  avoid_storing:
+    - "passport numbers"
+    - "payment information"
+    - "unnecessary personal data"
+
+evaluation:
+  metrics:
+    - "budget_fit"
+    - "preference_match"
+    - "schedule_feasibility"
+    - "booking_reliability"
+    - "time_constraint_fit"
+    - "user_satisfaction"
+  scenarios:
+    - id: "weekend_city_trip"
+      input: "Plan a three-day budget-conscious city trip with food, museums, and low fatigue."
+      expected_properties:
+        - "fits stated budget"
+        - "keeps transfer times realistic"
+        - "does not book anything without approval"
+
+safety:
+  high_impact_actions:
+    - "booking_travel"
+    - "making_purchase"
+    - "sending_email"
+  human_review:
+    required_before:
+      - "booking_travel"
+      - "making_purchase"
+      - "sending_email"
+  privacy:
+    avoid_storing:
+      - "passport numbers"
+      - "payment information"
+      - "unnecessary personal data"
+    redact_logs: true
+
+deployment:
+  mode: "local_cli"
+  notes: "Phase 1 spec only; booking tools are disabled placeholders."

@@ -1,0 +1,157 @@
+schema_version: "0.1"
+team_id: "trading_strategy_research_team"
+team_version: "0.1.0"
+name: "Trading Strategy Research Team"
+domain: "trading_research"
+purpose: "Research, backtest, stress-test, and document trading strategies for simulation only."
+
+model_profiles:
+  default:
+    provider: "openai"
+    model: "configurable"
+    temperature: 0.1
+
+agents:
+  - id: "market_data_researcher"
+    role: "researcher"
+    goal: "Collect and validate market data sources and assumptions."
+    allowed_tools: ["market_data_api"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "strategy_ideator"
+    role: "planner"
+    goal: "Generate candidate strategy hypotheses without implying guaranteed returns."
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "backtest_engineer"
+    role: "executor"
+    goal: "Run reproducible backtests with realistic assumptions, costs, and train/test separation."
+    allowed_tools: ["backtest_runner"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "risk_manager"
+    role: "trading_risk_manager"
+    goal: "Analyze drawdown, exposure, leverage, costs, slippage, and failure modes."
+    allowed_tools: ["calculator"]
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "overfitting_critic"
+    role: "critic"
+    goal: "Detect data leakage, overfitting, invalid assumptions, and backtest artifacts."
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+  - id: "final_synthesizer"
+    role: "final_synthesizer"
+    goal: "Produce a simulation-only research report with assumptions, caveats, and next steps."
+    memory_access: ["short_term", "project"]
+    model_profile: "default"
+
+workflows:
+  - id: "research_backtest_review"
+    type: "supervisor_worker"
+    supervisor: "strategy_ideator"
+    workers:
+      - "market_data_researcher"
+      - "backtest_engineer"
+      - "risk_manager"
+      - "overfitting_critic"
+    final: "final_synthesizer"
+    stopping_criteria:
+      max_iterations: 2
+      max_wall_time_minutes: 60
+      max_tool_calls: 40
+      max_cost_usd: 20
+      require_terminal_node: true
+    human_checkpoints:
+      - "before connecting any brokerage account"
+      - "before publishing financial recommendations"
+
+tools:
+  - id: "market_data_api"
+    provider: "future_adapter"
+    description: "Fetch historical market data from approved read-only providers."
+    risk_level: "medium"
+    side_effect_level: "read_only"
+  - id: "backtest_runner"
+    provider: "future_adapter"
+    description: "Run local sandboxed backtests."
+    risk_level: "high"
+    side_effect_level: "local_write"
+    sandbox: "local_restricted"
+  - id: "calculator"
+    provider: "builtin"
+    description: "Perform deterministic calculations."
+    risk_level: "low"
+    side_effect_level: "none"
+  - id: "broker_api"
+    provider: "future_adapter"
+    description: "Disabled placeholder for potential future brokerage integration."
+    enabled: false
+    risk_level: "critical"
+    side_effect_level: "high_impact"
+    approval_required: true
+
+memory:
+  short_term:
+    enabled: true
+  project:
+    enabled: true
+    store: "sqlite"
+    retention_days: 365
+  long_term:
+    enabled: false
+  avoid_storing:
+    - "brokerage credentials"
+    - "account numbers"
+    - "personal financial account data"
+
+evaluation:
+  metrics:
+    - "backtest_validity"
+    - "train_test_separation"
+    - "transaction_cost_modeling"
+    - "max_drawdown"
+    - "risk_adjusted_return"
+    - "overfitting_risk"
+    - "paper_trading_readiness"
+  scenarios:
+    - id: "moving_average_research"
+      input: "Evaluate a simple moving-average crossover strategy for research and simulation only."
+      expected_properties:
+        - "states that results are not guaranteed"
+        - "includes transaction costs and drawdown"
+        - "flags overfitting and data leakage risks"
+
+safety:
+  domain_constraints:
+    - "Research and simulation only."
+    - "No guaranteed return claims."
+    - "No live trading in MVP."
+  prohibited_actions:
+    - "claim_guaranteed_returns"
+    - "place_trade_without_approval"
+    - "connect_brokerage_without_approval"
+  high_impact_actions:
+    - "placing_trade"
+    - "connecting_brokerage"
+    - "publishing_financial_recommendation"
+  human_review:
+    required_before:
+      - "placing_trade"
+      - "connecting_brokerage"
+      - "publishing_financial_recommendation"
+  privacy:
+    avoid_storing:
+      - "brokerage credentials"
+      - "account numbers"
+      - "personal financial account data"
+    redact_logs: true
+
+deployment:
+  mode: "manual_only"
+  notes: "Trading team is research/simulation-only unless separately extended with legal/compliance review."

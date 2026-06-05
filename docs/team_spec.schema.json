@@ -1,0 +1,865 @@
+{
+  "$defs": {
+    "AgentSpec": {
+      "additionalProperties": false,
+      "description": "Declarative specification for a single agent role.",
+      "properties": {
+        "allowed_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "constraints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "goal": {
+          "minLength": 1,
+          "title": "Goal",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9_\\-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "instructions": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Instructions"
+        },
+        "memory_access": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Memory Access",
+          "type": "array"
+        },
+        "model_profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Profile"
+        },
+        "output_schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Schema"
+        },
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "goal"
+      ],
+      "title": "AgentSpec",
+      "type": "object"
+    },
+    "DeploymentMode": {
+      "description": "Declarative deployment mode. Execution is future work.",
+      "enum": [
+        "local_cli",
+        "local_api",
+        "cloud_worker",
+        "manual_only"
+      ],
+      "title": "DeploymentMode",
+      "type": "string"
+    },
+    "DeploymentSpec": {
+      "additionalProperties": false,
+      "description": "Deployment intent. Runtime deployment is future work.",
+      "properties": {
+        "mode": {
+          "$ref": "#/$defs/DeploymentMode",
+          "default": "local_cli"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "title": "DeploymentSpec",
+      "type": "object"
+    },
+    "EvaluationScenario": {
+      "additionalProperties": false,
+      "description": "One scenario used by the future evaluation harness.",
+      "properties": {
+        "expected_properties": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Properties",
+          "type": "array"
+        },
+        "human_review_required": {
+          "default": false,
+          "title": "Human Review Required",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9_\\-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "additionalProperties": true,
+              "type": "object"
+            }
+          ],
+          "title": "Input"
+        }
+      },
+      "required": [
+        "id",
+        "input"
+      ],
+      "title": "EvaluationScenario",
+      "type": "object"
+    },
+    "EvaluationSpec": {
+      "additionalProperties": false,
+      "description": "Evaluation requirements bundled with each generated team.",
+      "properties": {
+        "human_review_rubrics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Human Review Rubrics",
+          "type": "array"
+        },
+        "metrics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "regression_tests": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Regression Tests",
+          "type": "array"
+        },
+        "scenarios": {
+          "items": {
+            "$ref": "#/$defs/EvaluationScenario"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        }
+      },
+      "title": "EvaluationSpec",
+      "type": "object"
+    },
+    "HumanReviewPolicy": {
+      "additionalProperties": false,
+      "description": "Actions that must be paused for explicit human review.",
+      "properties": {
+        "required_before": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Before",
+          "type": "array"
+        }
+      },
+      "title": "HumanReviewPolicy",
+      "type": "object"
+    },
+    "MemorySpec": {
+      "additionalProperties": false,
+      "description": "Memory categories available to the team.",
+      "properties": {
+        "avoid_storing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Avoid Storing",
+          "type": "array"
+        },
+        "domain_knowledge": {
+          "$ref": "#/$defs/MemoryStoreSpec"
+        },
+        "long_term": {
+          "$ref": "#/$defs/MemoryStoreSpec"
+        },
+        "project": {
+          "$ref": "#/$defs/MemoryStoreSpec"
+        },
+        "short_term": {
+          "$ref": "#/$defs/MemoryStoreSpec"
+        },
+        "user_preferences": {
+          "$ref": "#/$defs/MemoryStoreSpec"
+        }
+      },
+      "title": "MemorySpec",
+      "type": "object"
+    },
+    "MemoryStoreSpec": {
+      "additionalProperties": false,
+      "description": "Configuration for one memory category.",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "retention_days": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retention Days"
+        },
+        "store": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Store"
+        }
+      },
+      "title": "MemoryStoreSpec",
+      "type": "object"
+    },
+    "ModelProfile": {
+      "additionalProperties": false,
+      "description": "Reusable model settings for agents.",
+      "properties": {
+        "max_output_tokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Output Tokens"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "temperature": {
+          "default": 0.2,
+          "maximum": 2.0,
+          "minimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeout Seconds"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "ModelProfile",
+      "type": "object"
+    },
+    "PrivacyPolicy": {
+      "additionalProperties": false,
+      "description": "Data-handling preferences for a team.",
+      "properties": {
+        "avoid_storing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Avoid Storing",
+          "type": "array"
+        },
+        "redact_logs": {
+          "default": true,
+          "title": "Redact Logs",
+          "type": "boolean"
+        },
+        "retention_days": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retention Days"
+        }
+      },
+      "title": "PrivacyPolicy",
+      "type": "object"
+    },
+    "RiskLevel": {
+      "description": "Risk level attached to a tool manifest.",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "RiskLevel",
+      "type": "string"
+    },
+    "SafetyPolicy": {
+      "additionalProperties": false,
+      "description": "Domain and cross-domain safety policy for a team.",
+      "properties": {
+        "domain_constraints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Domain Constraints",
+          "type": "array"
+        },
+        "high_impact_actions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "High Impact Actions",
+          "type": "array"
+        },
+        "human_review": {
+          "$ref": "#/$defs/HumanReviewPolicy"
+        },
+        "privacy": {
+          "$ref": "#/$defs/PrivacyPolicy"
+        },
+        "prohibited_actions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prohibited Actions",
+          "type": "array"
+        }
+      },
+      "title": "SafetyPolicy",
+      "type": "object"
+    },
+    "SideEffectLevel": {
+      "description": "How much a tool can change the outside world.",
+      "enum": [
+        "none",
+        "read_only",
+        "local_write",
+        "external_write",
+        "high_impact"
+      ],
+      "title": "SideEffectLevel",
+      "type": "string"
+    },
+    "StoppingCriteria": {
+      "additionalProperties": false,
+      "description": "Hard boundaries that prevent unbounded agent loops.",
+      "properties": {
+        "max_cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Cost Usd"
+        },
+        "max_iterations": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Iterations"
+        },
+        "max_tokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tokens"
+        },
+        "max_tool_calls": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Tool Calls"
+        },
+        "max_wall_time_minutes": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Wall Time Minutes"
+        },
+        "require_terminal_node": {
+          "default": true,
+          "title": "Require Terminal Node",
+          "type": "boolean"
+        }
+      },
+      "title": "StoppingCriteria",
+      "type": "object"
+    },
+    "ToolSpec": {
+      "additionalProperties": false,
+      "description": "Declarative tool manifest.",
+      "properties": {
+        "approval_required": {
+          "default": false,
+          "title": "Approval Required",
+          "type": "boolean"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9_\\-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "input_schema": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Input Schema"
+        },
+        "output_schema": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Schema"
+        },
+        "permissions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Permissions",
+          "type": "array"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "rate_limits": {
+          "additionalProperties": true,
+          "title": "Rate Limits",
+          "type": "object"
+        },
+        "risk_level": {
+          "$ref": "#/$defs/RiskLevel",
+          "default": "low"
+        },
+        "sandbox": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sandbox"
+        },
+        "secrets_required": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Secrets Required",
+          "type": "array"
+        },
+        "side_effect_level": {
+          "$ref": "#/$defs/SideEffectLevel",
+          "default": "none"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ToolSpec",
+      "type": "object"
+    },
+    "WorkflowEdge": {
+      "additionalProperties": false,
+      "description": "Optional explicit graph edge for custom workflows.",
+      "properties": {
+        "condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "target"
+      ],
+      "title": "WorkflowEdge",
+      "type": "object"
+    },
+    "WorkflowSpec": {
+      "additionalProperties": false,
+      "description": "Declarative workflow connecting agents into an execution pattern.",
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/WorkflowEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "final": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Final"
+        },
+        "human_checkpoints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Human Checkpoints",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9_\\-]*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "retry_policy": {
+          "additionalProperties": true,
+          "title": "Retry Policy",
+          "type": "object"
+        },
+        "steps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "stopping_criteria": {
+          "$ref": "#/$defs/StoppingCriteria"
+        },
+        "supervisor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supervisor"
+        },
+        "type": {
+          "$ref": "#/$defs/WorkflowType"
+        },
+        "workers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Workers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "stopping_criteria"
+      ],
+      "title": "WorkflowSpec",
+      "type": "object"
+    },
+    "WorkflowType": {
+      "description": "Workflow families supported by the team-factory spec layer.",
+      "enum": [
+        "sequential",
+        "debate",
+        "supervisor_worker",
+        "critique_and_revision",
+        "parallel_research",
+        "custom"
+      ],
+      "title": "WorkflowType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Root model for a reusable, versioned agent-team specification.",
+  "properties": {
+    "agents": {
+      "items": {
+        "$ref": "#/$defs/AgentSpec"
+      },
+      "minItems": 1,
+      "title": "Agents",
+      "type": "array"
+    },
+    "deployment": {
+      "$ref": "#/$defs/DeploymentSpec"
+    },
+    "domain": {
+      "minLength": 1,
+      "title": "Domain",
+      "type": "string"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/EvaluationSpec"
+    },
+    "memory": {
+      "$ref": "#/$defs/MemorySpec"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "model_profiles": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ModelProfile"
+      },
+      "title": "Model Profiles",
+      "type": "object"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "purpose": {
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "safety": {
+      "$ref": "#/$defs/SafetyPolicy"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "team_id": {
+      "pattern": "^[a-z][a-z0-9_\\-]*$",
+      "title": "Team Id",
+      "type": "string"
+    },
+    "team_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+[-+A-Za-z0-9.]*$",
+      "title": "Team Version",
+      "type": "string"
+    },
+    "tools": {
+      "items": {
+        "$ref": "#/$defs/ToolSpec"
+      },
+      "title": "Tools",
+      "type": "array"
+    },
+    "workflows": {
+      "items": {
+        "$ref": "#/$defs/WorkflowSpec"
+      },
+      "minItems": 1,
+      "title": "Workflows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "team_id",
+    "team_version",
+    "name",
+    "domain",
+    "purpose",
+    "agents",
+    "workflows"
+  ],
+  "title": "TeamSpec",
+  "type": "object"
+}
